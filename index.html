@@ -521,7 +521,7 @@ const F_MONO="'JetBrains Mono','Courier New',monospace";
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function wrap(text,maxW,fs,mono){
-  const ratio=mono?0.60:0.60;
+  const ratio=mono?0.60:0.66;
   const chars=Math.max(5,Math.floor(maxW/(fs*ratio)));
   const words=text.split(/\s+/);const lines=[];let cur='';
   for(const w of words){const t=cur?cur+' '+w:w;
@@ -531,7 +531,7 @@ function wrap(text,maxW,fs,mono){
 }
 function txt(x,y,s,o={}){
   const fs=o.fs||30,mono=o.mono,anchor=o.anchor||'start';
-  const lh=o.lh||fs*1.08,ls=o.ls||0;
+  const lh=fs*(o.lh||1.1),ls=o.ls||0;
   const fam=mono?F_MONO:F_DISP,wt=o.wt||(mono?700:800);
   const lines=Array.isArray(s)?s:wrap(s,o.maxW||900,fs,mono);
   let out=`<text x="${x}" y="${y}" font-family="${fam}" font-weight="${wt}" font-size="${fs}" letter-spacing="${ls}" text-anchor="${anchor}" fill="${o.fill||'#F8FAFC'}" ${o.op!=null?`opacity="${o.op}"`:''}>`;
@@ -544,7 +544,7 @@ function barcode(x,y,w,h,seed){
   while(bx<x+w-4){const c=seed.charCodeAt(i%seed.length);
     if(c%3!==0){const bw=2+(c%5);out+=`<rect x="${bx}" y="${y}" width="${bw}" height="${h}" fill="#0a0d10"/>`;}
     bx+=2+(c%4)+2;i++;}
-  out+=`</g>`+txt(x+w/2,y+h+22,seed,{mono:true,fs:16,anchor:'middle',fill:'#0a0d10',ls:2});
+  out+=`</g>`+txt(x+w/2,y+h+22,'EXME · PT',{mono:true,fs:16,anchor:'middle',fill:'#0a0d10',ls:2});
   return out;
 }
 function stamp(x,y,text,color,rot=0,sc=1){
@@ -616,11 +616,10 @@ function chrome(p,H,fmt,uid,light=false){
   return `
   <g font-family="${F_MONO}">
    <text x="64" y="66" font-size="20" font-weight="700" letter-spacing="4" fill="${tc}">EXME // ARQUIVO DO COLECIONADOR</text>
-   <text x="1016" y="66" font-size="20" font-weight="700" letter-spacing="2" fill="${sub}" text-anchor="end">${p.serial}</text>
    <line x1="64" y1="88" x2="1016" y2="88" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
    <line x1="64" y1="${H-92}" x2="1016" y2="${H-92}" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
    <text x="64" y="${H-52}" font-size="19" font-weight="700" letter-spacing="3" fill="${pc}">${esc(PILLARS[p.pillar].nome.toUpperCase())}</text>
-   <text x="64" y="${H-26}" font-size="15" letter-spacing="3" fill="${sub}">ARQUÉTIPO ${p.arch} · ${esc(ARCHS[p.arch].curto)} — @EXME.CLUB</text>
+   <text x="64" y="${H-26}" font-size="15" letter-spacing="3" fill="${sub}">@EXME.CLUB</text>
    <g transform="translate(828,${H-76})">${barcode(0,0,188,34,p.serial)}</g>
   </g>`;
 }
@@ -628,20 +627,28 @@ function chrome(p,H,fmt,uid,light=false){
 /* ---- A1 · VAULT ---- */
 function archVault(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
+  const v=+p.id%4, pc=PILLARS[p.pillar].cor;
+  const borderFill=['url(#g'+uid+'-holo)','url(#g'+uid+'-green)','#E2E8F0','url(#g'+uid+'-holo)'][v];
+  const foilTag=['FOIL','HOLO','GOLD','RARO'][v];
+  const stampTxt=['RARO','ÉPICO','LENDÁRIO','FOIL'][v];
+  const stampRot=[-12,7,-6,11][v];
+  /* brilho da cor do pilar no fundo, variando o quadrante */
+  const gx=[160,920,920,160][v], gy=story?[600,1500,500,1400][v]:[500,900,950,400][v];
+  let glow=`<ellipse cx="${gx}" cy="${gy}" rx="520" ry="360" fill="${pc}" opacity=".06"/>`;
   const cardX=130,cardW=820,cardY=story?430:330,pad=30;
   const photoH=story?600:400,plateH=92,rowH=56;
   const rows=[['POSIÇÃO',p.pos],['ÉPOCA','26/27'],['RARIDADE',p.raridade+'  ·  '+p.date]];
   const cardH=pad+photoH+24+plateH+26+rows.length*rowH+(story?92:pad);
   const photoY=cardY+pad,plateY=photoY+photoH+24,sy=plateY+plateH+30;
-  let s=baseBg(uid);
-  s+=txt(64,story?185:165,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
-  s+=txt(64,story?story?262:240:240,p.h,{fs:story?66:60,maxW:w-128,fill:'#F8FAFC',wt:800,lh:1.04});
+  let s=baseBg(uid)+glow;
+  s+=txt(64,story?185:165,p.note,{mono:true,fs:22,fill:v%2?'#F59E0B':'#10E868',ls:4});
+  s+=txt(64,story?262:240,p.h,{fs:story?66:60,maxW:w-128,fill:'#F8FAFC',wt:800});
   /* card */
   s+=`<g filter="url(#f${uid}-shadow)">
-   <rect x="${cardX-10}" y="${cardY-10}" width="${cardW+20}" height="${cardH+20}" rx="34" fill="url(#g${uid}-holo)"/>
+   <rect x="${cardX-10}" y="${cardY-10}" width="${cardW+20}" height="${cardH+20}" rx="34" fill="${borderFill}"/>
    <rect x="${cardX}" y="${cardY}" width="${cardW}" height="${cardH}" rx="26" fill="#F8FAFC"/>
    <clipPath id="c${uid}-photo"><rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" rx="16"/></clipPath>
-   <g clip-path="url(#c${uid}-photo)">${imageTag(p,cardX+pad,photoY,cardW-pad*2,photoH,uid)}
+    <g clip-path="url(#c${uid}-photo)">${imageTag(p,cardX+pad,photoY,cardW-pad*2,photoH,uid,v===2)}
      <rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" fill="url(#g${uid}-fade)"/>
      <rect class="holo-sheen" x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" fill="url(#g${uid}-sheen)"/></g>
    <rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" rx="16" fill="none" stroke="#0a0d10" stroke-width="2" opacity=".15"/>`;
@@ -649,7 +656,7 @@ function archVault(p,d,uid){
   s+=`<rect x="${cardX+pad}" y="${plateY}" width="${cardW-pad*2}" height="${plateH}" rx="12" fill="#0D0F12"/>
    ${txt(cardX+pad+28,plateY+plateH/2+8,p.t,{fs:40,fill:'#F8FAFC',maxW:cardW-300,wt:800})}
    <rect x="${cardX+cardW-pad-150}" y="${plateY+18}" width="124" height="${plateH-36}" rx="8" fill="url(#g${uid}-holo)"/>
-   ${txt(cardX+cardW-pad-88,plateY+plateH/2+2,'FOIL',{mono:true,fs:22,fill:'#0a0d10',anchor:'middle',ls:4})}`;
+   ${txt(cardX+cardW-pad-88,plateY+plateH/2+2,foilTag,{mono:true,fs:22,fill:'#0a0d10',anchor:'middle',ls:4})}`;
   /* stats */
   rows.forEach((r,i)=>{const y=sy+i*rowH;
     s+=txt(cardX+pad+4,y,r[0],{mono:true,fs:19,fill:'rgba(10,13,16,.5)',ls:2});
@@ -660,8 +667,8 @@ function archVault(p,d,uid){
   let pips='';for(let i=0;i<5;i++){pips+=`<rect x="${cardX+pad+4+i*34}" y="${py}" width="24" height="14" rx="3" fill="${i<p.rarN?'url(#g'+uid+'-holo)':'rgba(10,13,16,.12)'}"/>`;}
   s+=pips+txt(cardX+cardW-pad-4,py+12,p.serial.replace(/·/g,' / '),{mono:true,fs:17,fill:'rgba(10,13,16,.55)',anchor:'end',ls:2});
   s+=`</g>`;
-  s+=stamp(cardX+cardW-66,cardY+46,'RARO','#0a0d10',-12,1.1);
-  s+=stamp(cardX+96,cardY+cardH-34,'ARQUIVO EXME','rgba(10,13,16,.55)',5,.8);
+  s+=stamp(cardX+cardW-66,cardY+46,stampTxt,'#0a0d10',stampRot,1.1);
+  s+=stamp(cardX+96,cardY+cardH-34,'ARQUIVO EXME','rgba(10,13,16,.55)',-stampRot*.5,.8);
   /* corpo: dentro do cartão (story) ou faixa inferior (feed) */
   if(story){
     s+=txt(cardX+pad+4,sy+rows.length*rowH+58,p.b,{mono:true,fs:22,maxW:cardW-pad*2-8,fill:'rgba(10,13,16,.72)',wt:700,lh:1.5});
@@ -675,36 +682,68 @@ function archVault(p,d,uid){
 /* ---- A2 · SCRAPBOOK ---- */
 function archScrap(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
-  let s=`<rect width="100%" height="100%" fill="#171B22"/>
+  const v=+p.id%4, pc=PILLARS[p.pillar].cor;
+  const tapeCol=['rgba(245,158,11,.8)','rgba(16,232,104,.7)','rgba(226,232,240,.6)','rgba(192,132,252,.75)'][v];
+  const tapeCol2=['rgba(226,232,240,.55)','rgba(245,158,11,.65)','rgba(125,211,252,.6)','rgba(245,158,11,.7)'][v];
+  const noteCol=['#F59E0B','#10E868','#7DD3FC','#C084FC'][v];
+  const noteInk=['#1a1204','#08130c','#07212e','#1e1030'][v];
+  const rot=[-2.4,1.8,-1.4,2.6][v];
+  let s=`<rect width="100%" height="100%" fill="${['#171B22','#141821','#191521','#14201C'][v]}"/>
   <rect width="100%" height="100%" fill="url(#p${uid}-dots)" opacity=".07"/>
+  <ellipse cx="${[200,880,900,180][v]}" cy="${[300,260,1100,1200][v]}" rx="480" ry="300" fill="${pc}" opacity=".05"/>
   <rect width="100%" height="100%" filter="url(#f${uid}-grain)" opacity=".14"/>`;
-  /* taped photo cutout */
-  const px=story?110:90,py=story?300:230,pw=story?860:560,ph=story?760:620;
-  s+=tape(px+pw/2-90,py-6,180,-4,'rgba(245,158,11,.8)');
-  s+=tape(px+pw/2-90,py+ph-14,170,3,'rgba(226,232,240,.55)');
-  s+=`<g transform="rotate(${story?-1.6:-2.4} ${px+pw/2} ${py+ph/2})" filter="url(#f${uid}-shadow)">
-    <rect x="${px-14}" y="${py-14}" width="${pw+28}" height="${ph+28}" fill="#F8FAFC"/>
-    <clipPath id="c${uid}-scrap"><rect x="${px}" y="${py}" width="${pw}" height="${ph}"/></clipPath>
-    <g clip-path="url(#c${uid}-scrap)">${imageTag(p,px,py,pw,ph,uid,true)}
-      <rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="#F59E0B" opacity=".10"/>
-      <rect class="holo-sheen" x="${px}" y="${py}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
-    ${txt(px+18,py+ph-22,p.date+' · '+p.note,{mono:true,fs:18,fill:'#0a0d10',ls:2})}
-  </g>`;
-  s+=stamp(px+pw-20,py+40,'REVELADO','#F59E0B',-8,1);
-  /* headline */
-  const hx=story?80:px+pw+50;
-  const hy=story?py+ph+90:py+40;
-  s+=txt(hx,story?hy:py-70,p.note,{mono:true,fs:21,fill:'#10E868',ls:4});
-  s+=txt(hx,story?hy+86:py+70,p.h,{fs:story?76:54,maxW:story?w-160:w-hx-80,fill:'#F8FAFC',wt:800,lh:1.0});
-  /* sticky note */
-  const nx=story?110:w-400,ny=story?hy+330:H-470;
-  s+=`<g transform="rotate(2 ${nx+190} ${ny+110})" filter="url(#f${uid}-shadow)">
-    <rect x="${nx}" y="${ny}" width="${story?w-220:340}" height="${story?250:230}" rx="4" fill="#F59E0B"/>
-    ${txt(nx+28,ny+56,p.b,{mono:true,fs:story?24:20,maxW:(story?w-280:290),fill:'#1a1204',wt:700,lh:1.5})}</g>`;
-  s+=tape(nx+120,ny-14,120,-6,'rgba(248,250,252,.5)');
-  /* footnote */
-  s+=txt(80,H-170,'* Nota de rodapé: o colecionador nunca deita nada fora. Arquiva.',{mono:true,fs:19,fill:'rgba(248,250,252,.55)',ls:1});
-  s+=star(w-140,story?200:300,46,'#10E868',18);
+  if(story){
+    const px=110,py=310,pw=860,ph=640;
+    s+=tape(px+pw/2-95,py-8,190,rot*2,tapeCol);
+    s+=tape(px+pw/2-85,py+ph-16,170,-rot*1.5,tapeCol2);
+    s+=`<g transform="rotate(${rot} ${px+pw/2} ${py+ph/2})" filter="url(#f${uid}-shadow)">
+      <rect x="${px-14}" y="${py-14}" width="${pw+28}" height="${ph+28}" fill="#F8FAFC"/>
+      <clipPath id="c${uid}-scrap"><rect x="${px}" y="${py}" width="${pw}" height="${ph}"/></clipPath>
+      <g clip-path="url(#c${uid}-scrap)">${imageTag(p,px,py,pw,ph,uid,v===1)}
+        <rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="#F59E0B" opacity=".10"/>
+        <rect class="holo-sheen" x="${px}" y="${py}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
+      ${txt(px+18,py+ph-24,p.date+' · '+p.note,{mono:true,fs:18,fill:'#0a0d10',ls:2})}
+    </g>`;
+    s+=stamp(px+pw-24,py+44,'REVELADO','#F59E0B',-8,1);
+    s+=txt(80,py+ph+110,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
+    s+=txt(80,py+ph+190,p.h,{fs:62,maxW:w-160,fill:'#F8FAFC',wt:800});
+    const nw=v%2?w-300:w-220, nx=v%2?150:110, ny=py+ph+ (64*1.08*wrap(p.h,w-160,62,false).length)+150;
+    const nrot=[-1.6,1.4,-2,1.2][v];
+    s+=tape(nx+nw/2-70,ny-16,140,-nrot*2,tapeCol2);
+    s+=`<g transform="rotate(${nrot} ${nx+nw/2} ${ny+95})" filter="url(#f${uid}-shadow)">
+      <rect x="${nx}" y="${ny}" width="${nw}" height="210" rx="4" fill="${noteCol}"/>
+      ${txt(nx+28,ny+54,p.b,{mono:true,fs:23,maxW:nw-56,fill:noteInk,wt:700})}</g>`;
+    s+=txt(80,H-170,'* Nota de rodapé: o colecionador nunca deita nada fora. Arquiva.',{mono:true,fs:19,fill:'rgba(248,250,252,.55)',ls:1});
+    s+=star([w-150,130,w-150,130][v],190,42,pc,18);
+  }else{
+    /* FEED: duas colunas — foto à esquerda, texto/notas à direita */
+    const px=70,py=330,pw=560,ph=680;
+    s+=tape(px+pw/2-95,py-8,190,rot*2,tapeCol);
+    s+=tape(px+pw/2-85,py+ph-16,170,-rot*1.5,tapeCol2);
+    s+=`<g transform="rotate(${rot} ${px+pw/2} ${py+ph/2})" filter="url(#f${uid}-shadow)">
+      <rect x="${px-14}" y="${py-14}" width="${pw+28}" height="${ph+28}" fill="#F8FAFC"/>
+      <clipPath id="c${uid}-scrap"><rect x="${px}" y="${py}" width="${pw}" height="${ph}"/></clipPath>
+      <g clip-path="url(#c${uid}-scrap)">${imageTag(p,px,py,pw,ph,uid,v===1)}
+        <rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="#F59E0B" opacity=".10"/>
+        <rect class="holo-sheen" x="${px}" y="${py}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
+      ${txt(px+18,py+ph-24,p.date+' · '+p.note,{mono:true,fs:18,fill:'#0a0d10',ls:2})}
+    </g>`;
+    s+=stamp(px+pw-30,py+50,'REVELADO','#F59E0B',-8,1);
+    /* coluna de texto à direita */
+    const x2=700,xw=320;
+    s+=txt(x2,300,p.note,{mono:true,fs:20,fill:'#10E868',ls:3,maxW:xw});
+    s+=txt(x2,360,p.h,{fs:42,maxW:xw,fill:'#F8FAFC',wt:800});
+    const hl=wrap(p.h,xw,42,false).length*42*1.1;
+    const ny=380+hl+26;
+    s+=tape(x2+xw/2-70,ny-16,140,3,tapeCol2);
+    s+=`<g transform="rotate(${-1.8+v*1.1} ${x2+xw/2} ${ny+110})" filter="url(#f${uid}-shadow)">
+      <rect x="${x2}" y="${ny}" width="${xw}" height="230" rx="4" fill="${noteCol}"/>
+      ${txt(x2+24,ny+52,p.b,{mono:true,fs:19,maxW:xw-48,fill:noteInk,wt:700})}</g>`;
+    /* carimbo e estrela de baixo */
+    s+=stamp(x2+xw/2,ny+330,['ARQUIVO','RARO','REVELADO','CATALOGADO'][v],v===2?'#7DD3FC':pc,6+(-1)**v*4,.85);
+    s+=star(x2+40,1080,34,['#10E868','#F59E0B','#7DD3FC','#C084FC'][v],24);
+    s+=txt(70,H-170,'* Nota de rodapé: o colecionador nunca deita nada fora. Arquiva.',{mono:true,fs:19,fill:'rgba(248,250,252,.55)',ls:1});
+  }
   s+=chrome(p,H,'feed',uid);
   return s;
 }
@@ -722,9 +761,13 @@ function win(uid,x,y,w,h,title,body,rot=0,light=true){
 }
 function archForum(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
+  const v=+p.id%4;
+  const kickers=['LIGAÇÃO DISCADA DETETADA · BEM-VINDO DE VOLTA','BBS.EXME · NÓS NUNCA FECHAMOS','NOVA MENSAGEM PRIVADA · TEMOS O 247','A SALA DE TROCAS ABRIU ÀS 06H00'];
+  const win1Rot=[-1.2,1.1,-0.7,1.4][v], win2Rot=[1.4,-1.3,1.0,-1.1][v];
   let s=baseBg(uid);
-  s+=txt(64,168,'LIGAÇÃO DISCADA DETETADA · BEM-VINDO DE VOLTA',{mono:true,fs:20,fill:'#10E868',ls:3});
-  s+=txt(64,story?250:236,p.h,{fs:story?60:52,maxW:w-128,fill:'#F8FAFC',wt:800,lh:1.04});
+  s+=`<ellipse cx="${[540,300,800,200][v]}" cy="${story?900:700}" rx="460" ry="300" fill="${PILLARS[p.pillar].cor}" opacity=".05"/>`;
+  s+=txt(64,168,kickers[v],{mono:true,fs:20,fill:v%2?'#7DD3FC':'#10E868',ls:3});
+  s+=txt(64,story?250:236,p.h,{fs:story?60:52,maxW:w-128,fill:'#F8FAFC',wt:800});
   const mkThread=(x,y,ww,hh)=>{
     let b='';let cy=y+104;
     b+=`<rect x="${x+26}" y="${y+86}" width="${ww-52}" height="${hh-116}" fill="#F8FAFC" stroke="#0a0d10" stroke-width="2"/>`;
@@ -742,15 +785,15 @@ function archForum(p,d,uid){
     return b;
   };
   if(story){
-    s+=win(uid,70,330,940,720,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(70,330,940,720),-1.2);
+    s+=win(uid,70,330,940,720,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(70,330,940,720),win1Rot);
     s+=win(uid,110,1110,860,560,'MENSAGEM_PRIVADA — gatilho_foil',
-      txt(140,1220,'"tenho o 247. encontro no portão ás 16h. não contes ao admin."',{mono:true,fs:21,fill:'#F59E0B',maxW:800,wt:700,lh:1.5})+
-      txt(140,1420,'estado: ONLINE · 412 utilizadores ligados',{mono:true,fs:18,fill:'#10E868'}),1.4,false);
+      txt(140,1220,'"tenho o 247. encontro no portão ás 16h. não contes ao admin."',{mono:true,fs:21,fill:'#F59E0B',maxW:800,wt:700})+
+      txt(140,1420,'estado: ONLINE · 412 utilizadores ligados',{mono:true,fs:18,fill:'#10E868'}),win2Rot,false);
   }else{
-    s+=win(uid,60,320,760,820,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(60,320,760,820),-1.4);
+    s+=win(uid,60,320,760,820,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(60,320,760,820),win1Rot);
     s+=win(uid,360,560,660,420,'MENSAGEM_PRIVADA',
-      txt(392,668,'"tenho o 247. encontro no portão."',{mono:true,fs:19,fill:'#F59E0B',maxW:600,wt:700,lh:1.5})+
-      txt(392,780,'ONLINE · 412 users',{mono:true,fs:16,fill:'#10E868'}),1.8,false);
+      txt(392,668,'"tenho o 247. encontro no portão."',{mono:true,fs:19,fill:'#F59E0B',maxW:600,wt:700})+
+      txt(392,780,'ONLINE · 412 users',{mono:true,fs:16,fill:'#10E868'}),win2Rot,false);
   }
   s+=chrome(p,H,'feed',uid);
   return s;
@@ -759,20 +802,23 @@ function archForum(p,d,uid){
 /* ---- A4 · MANIFESTO ---- */
 function archManifesto(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
+  const v=+p.id%4, pc=PILLARS[p.pillar].cor;
   const fs=story?104:92;
   const lines=wrap(p.h,w-140,fs,false);
+  const over=[.68,.58,.78,.5][v];
   let s=`${imageTag(p,0,0,w,H,uid,true)}
-  <rect width="100%" height="100%" fill="#0D0F12" opacity=".68"/>
+  <rect width="100%" height="100%" fill="#0D0F12" opacity="${over}"/>
   <rect width="100%" height="100%" filter="url(#f${uid}-grain)" opacity=".16"/>`;
-  s+=txt(64,300,'“',{fs:240,fill:'#10E868',wt:800,op:.28});
+  const quoteCol=['#10E868','#F59E0B','#7DD3FC','#C084FC'][v];
+  s+=txt([70,w-190,70,w-190][v],[300,280,330,270][v],'“',{fs:240,fill:quoteCol,wt:800,op:.3,anchor:v%2?'end':'start'});
   const startY=story?H*.34:H*.3;
   lines.forEach((ln,i)=>{
-    const y=startY+i*fs*1.02;
-    s+=txt(72,y,ln,{fs,fill:'#F8FAFC',wt:800,maxW:w-140,lh:1.02});
-    s+=`<rect x="76" y="${y+26}" width="${Math.min(w-160,ln.length*fs*.56)}" height="10" fill="#10E868" opacity=".85"/>`;
+    const y=startY+i*fs*1.1;
+    s+=txt(72,y,ln,{fs,fill:i%3===0?pc:'#F8FAFC',wt:800,maxW:w-140});
+    s+=`<rect x="76" y="${y+26}" width="${Math.min(w-160,ln.length*fs*.62)}" height="10" fill="${i%2?'#F59E0B':'#10E868'}" opacity=".85"/>`;
   });
-  s+=txt(72,startY+lines.length*fs*1.02+80,p.b,{mono:true,fs:story?27:24,maxW:w-160,fill:'rgba(248,250,252,.78)',lh:1.6});
-  s+=stamp(w-190,200,story?'ARQUIVO':'MANIFESTO','#F59E0B',8,1.1);
+  s+=txt(72,startY+lines.length*fs*1.1+80,p.b,{mono:true,fs:story?27:24,maxW:w-160,fill:'rgba(248,250,252,.78)'});
+  s+=stamp([w-190,w-170,170,w-190][v],200,[story?'ARQUIVO':'MANIFESTO','VERDADE','COLECIONAR','ASSINADO'][v],v===2?'#10E868':'#F59E0B',[8,-7,6,-10][v],1.1);
   s+=chrome(p,H,'feed',uid);
   return s;
 }
@@ -781,6 +827,9 @@ function archManifesto(p,d,uid){
 function archReliquia(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
   let s=baseBg(uid);
+  const v=+p.id%4;
+  const stampTxt=['REGISTO','PEÇA Nº','CATÁLOGO','ENTRADA'][v];
+  const stampRot=[-6,7,-4,5][v];
   if(story){
     const ph=H*.5;
     s+=`<clipPath id="c${uid}-rel"><rect x="0" y="96" width="${w}" height="${ph-96}"/></clipPath>
@@ -788,7 +837,7 @@ function archReliquia(p,d,uid){
       <rect x="0" y="96" width="${w}" height="${ph-96}" fill="#F59E0B" opacity=".12"/>
       <rect width="${w}" height="${ph}" fill="url(#g${uid}-fade)"/></g>
     <rect x="40" y="130" width="${w-80}" height="${ph-170}" fill="none" stroke="#F8FAFC" stroke-width="3" opacity=".8"/>`;
-    s+=stamp(w-200,ph-60,'REGISTO '+p.date.substring(p.date.length-4),'#F8FAFC',-6,1);
+    s+=stamp(w-200,ph-60,stampTxt+' '+p.date.substring(p.date.length-4),'#F8FAFC',stampRot,1);
     const ty=ph+80;
     s+=txt(72,ty,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
     s+=txt(72,ty+86,p.h,{fs:64,maxW:w-144,fill:'#F8FAFC',wt:800,lh:1.02});
@@ -799,21 +848,23 @@ function archReliquia(p,d,uid){
       s+=`<line x1="72" y1="${y+20}" x2="${w-72}" y2="${y+20}" stroke="#E2E8F0" stroke-opacity=".18"/>`;});
   }else{
     const pw=580;
-    s+=`<clipPath id="c${uid}-rel"><rect x="0" y="96" width="${pw}" height="${H-192}"/></clipPath>
-    <g clip-path="url(#c${uid}-rel)">${imageTag(p,0,96,pw,H-192,uid,true)}
-      <rect x="0" y="96" width="${pw}" height="${H-192}" fill="#F59E0B" opacity=".12"/>
-      <rect width="${pw}" height="${H}" fill="url(#g${uid}-fade)"/></g>
-    <rect x="36" y="130" width="${pw-72}" height="${H-260}" fill="none" stroke="#F8FAFC" stroke-width="3" opacity=".8"/>`;
-    s+=stamp(pw-150,H-260,p.date.substring(p.date.length-4),'#F8FAFC',-6,1);
-    const x=pw+64;
-    s+=txt(x,250,p.note,{mono:true,fs:21,fill:'#10E868',ls:4});
-    s+=txt(x,340,p.h,{fs:52,maxW:w-x-64,fill:'#F8FAFC',wt:800,lh:1.04});
+    const mirror=v%2===1;
+    const px=mirror?w-pw:0;
+    const x=mirror?64:pw+64, ax=mirror?w-64:w-64;
+    s+=`<clipPath id="c${uid}-rel"><rect x="${px}" y="96" width="${pw}" height="${H-192}"/></clipPath>
+    <g clip-path="url(#c${uid}-rel)">${imageTag(p,px,96,pw,H-192,uid,true)}
+      <rect x="${px}" y="96" width="${pw}" height="${H-192}" fill="#F59E0B" opacity=".12"/>
+      <rect x="${px}" y="96" width="${pw}" height="${H-192}" fill="url(#g${uid}-fade)"/></g>
+    <rect x="${px+36}" y="130" width="${pw-72}" height="${H-260}" fill="none" stroke="#F8FAFC" stroke-width="3" opacity=".8"/>`;
+    s+=stamp(mirror?px+150:px+pw-150,H-260,stampTxt+' '+p.date.substring(p.date.length-4),'#F8FAFC',mirror?-stampRot:stampRot,1);
+    s+=txt(x,250,p.note,{mono:true,fs:21,fill:v%2?'#F59E0B':'#10E868',ls:4,maxW:pw-128});
+    s+=txt(x,340,p.h,{fs:52,maxW:pw-128,fill:'#F8FAFC',wt:800});
     const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO'],['SÉRIE',p.serial],['CATÁLOGO',p.id+'/060']];
     rows.forEach((r,i)=>{const y=620+i*88;
       s+=txt(x,y,r[0],{mono:true,fs:18,fill:'rgba(248,250,252,.45)',ls:3});
-      s+=txt(w-64,y,r[1],{mono:true,fs:20,fill:'#E2E8F0',anchor:'end'});
-      s+=`<line x1="${x}" y1="${y+22}" x2="${w-64}" y2="${y+22}" stroke="#E2E8F0" stroke-opacity=".18"/>`;});
-    s+=star(w-130,180,40,'#F59E0B',14);
+      s+=txt(ax,y,r[1],{mono:true,fs:20,fill:'#E2E8F0',anchor:'end',maxW:pw-140});
+      s+=`<line x1="${x}" y1="${y+22}" x2="${ax}" y2="${y+22}" stroke="#E2E8F0" stroke-opacity=".18"/>`;});
+    s+=star(mirror?130:w-130,180,40,v===2?'#10E868':'#F59E0B',14);
   }
   s+=chrome(p,H,'feed',uid);
   return s;
@@ -822,10 +873,14 @@ function archReliquia(p,d,uid){
 /* ---- A6 · RITUAL 3 LÂMINAS ---- */
 function archRitual(p,d,uid){
   const{w,h:H}=d;const story=H>1500;
+  const v=+p.id%4;
+  const numCols=['#10E868','#F59E0B','#7DD3FC','#C084FC'];
+  const arrowCols=['#F59E0B','#10E868','#C084FC','#7DD3FC'];
   const steps=p.steps||['RASGAR','REVELAR','GUARDAR'];
   const descs=['O gesto ensaiado mil vezes.','O segundo que não volta.','O início da próxima busca.'];
   let s=baseBg(uid);
-  s+=txt(w/2,170,p.note,{mono:true,fs:21,fill:'#10E868',anchor:'middle',ls:5});
+  s+=`<ellipse cx="${w/2}" cy="${story?950:650}" rx="520" ry="380" fill="${numCols[v]}" opacity=".05"/>`;
+  s+=txt(w/2,170,p.note,{mono:true,fs:21,fill:numCols[v],anchor:'middle',ls:5});
   s+=txt(w/2,226,p.h,{fs:story?44:40,maxW:w-160,fill:'#F8FAFC',anchor:'middle',wt:800});
   if(story){
     const ph=440,gap=30,y0=300;
@@ -838,10 +893,10 @@ function archRitual(p,d,uid){
           <rect x="70" y="${y}" width="${w-140}" height="${ph}" fill="#0D0F12" opacity=".45"/>
           <rect class="holo-sheen" x="70" y="${y}" width="${w-140}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
         <rect x="70" y="${y}" width="${w-140}" height="${ph}" rx="18" fill="none" stroke="url(#g${uid}-holo)" stroke-width="3"/>
-        ${txt(110,y+92,'0'+(i+1),{fs:64,fill:'#10E868',wt:800})}
+        ${txt(110,y+92,'0'+(i+1),{fs:64,fill:numCols[v],wt:800})}
         ${txt(110,y+180,st,{fs:58,fill:'#F8FAFC',wt:800})}
         ${txt(110,y+240,descs[i],{mono:true,fs:21,fill:'rgba(248,250,252,.75)',maxW:w-220,wt:400})}
-        ${i<2?`<path d="M${w/2-16} ${y+ph+2} L${w/2+16} ${y+ph+2} M${w/2} ${y+ph-6} L${w/2} ${y+ph+gap-12} M${w/2-12} ${y+ph+gap-20} L${w/2} ${y+ph+gap-8} L${w/2+12} ${y+ph+gap-20}" stroke="#10E868" stroke-width="4" fill="none" stroke-linecap="round"/>`:''}
+        ${i<2?`<path d="M${w/2-16} ${y+ph+2} L${w/2+16} ${y+ph+2} M${w/2} ${y+ph-6} L${w/2} ${y+ph+gap-12} M${w/2-12} ${y+ph+gap-20} L${w/2} ${y+ph+gap-8} L${w/2+12} ${y+ph+gap-20}" stroke="${arrowCols[v]}" stroke-width="4" fill="none" stroke-linecap="round"/>`:''}
       </g>`;
     });
   }else{
@@ -855,9 +910,9 @@ function archRitual(p,d,uid){
           <rect x="${x}" y="${y}" width="${pw}" height="${ph}" fill="url(#g${uid}-fade)"/>
           <rect class="holo-sheen" x="${x}" y="${y}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
         <rect x="${x}" y="${y}" width="${pw}" height="${ph}" rx="16" fill="none" stroke="url(#g${uid}-holo)" stroke-width="3"/>
-        ${txt(x+pw/2,y+ph-120,'0'+(i+1),{fs:72,fill:'#10E868',anchor:'middle',wt:800})}
+        ${txt(x+pw/2,y+ph-120,'0'+(i+1),{fs:72,fill:numCols[v],anchor:'middle',wt:800})}
         ${txt(x+pw/2,y+ph-58,st,{fs:40,fill:'#F8FAFC',anchor:'middle',wt:800})}
-        ${i<2?`<path d="M${x+pw+2} ${y+ph/2-14} l10 14 l-10 14" stroke="#F59E0B" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}
+        ${i<2?`<path d="M${x+pw+2} ${y+ph/2-14} l10 14 l-10 14" stroke="${arrowCols[v]}" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}
       </g>`;
     });
     s+=txt(w/2,H-200,p.b,{mono:true,fs:22,maxW:w-200,anchor:'middle',fill:'rgba(248,250,252,.72)',lh:1.6});
