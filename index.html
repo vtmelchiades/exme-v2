@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXME · Arquivo do Colecionador Moderno — Gerador de 60 Publicações</title>
+<meta name="description" content="Gerador, customizador e empacotador de 60 publicações para a Casa do Colecionador Moderno.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --ink:#0D0F12; --panel:#161A22; --panel2:#1B2029; --line:rgba(226,232,240,.12);
+  --green:#10E868; --gold:#F59E0B; --silver:#E2E8F0; --paper:#F8FAFC;
+  --cyan:#7DD3FC; --purple:#C084FC;
+  --disp:'Syne','Arial Black',sans-serif; --mono:'JetBrains Mono','Courier New',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--ink);color:var(--paper);font-family:var(--mono);overflow-x:hidden}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");}
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+a{color:inherit}
+
+/* ---------- HEADER ---------- */
+header{position:relative;z-index:10;padding:34px 40px 0;max-width:1560px;margin:0 auto}
+.brand-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:18px}
+.brand-mark{width:64px;height:64px;border:2px solid var(--green);border-radius:14px;display:grid;place-items:center;
+  font-family:var(--disp);font-weight:800;font-size:30px;color:var(--green);transform:rotate(-4deg);
+  box-shadow:0 0 0 4px rgba(16,232,104,.12), inset 0 0 24px rgba(16,232,104,.18);position:relative}
+.brand-mark::after{content:"";position:absolute;inset:6px;border:1px dashed rgba(16,232,104,.5);border-radius:8px}
+.brand h1{font-family:var(--disp);font-weight:800;font-size:clamp(26px,3.4vw,44px);line-height:.95;letter-spacing:-.02em;text-transform:uppercase}
+.brand h1 em{font-style:normal;color:var(--green)}
+.brand .sub{margin-top:8px;font-size:11px;letter-spacing:.28em;color:rgba(248,250,252,.55);text-transform:uppercase}
+.brand-meta{text-align:right;font-size:10px;letter-spacing:.18em;color:rgba(248,250,252,.5);line-height:1.9;text-transform:uppercase}
+.brand-meta b{color:var(--gold);font-weight:700}
+
+/* ---------- TOOLBAR ---------- */
+.toolbar{position:sticky;top:0;z-index:40;margin-top:26px;background:rgba(13,15,18,.82);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px 40px}
+.toolbar-inner{max-width:1480px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:transparent;color:rgba(248,250,252,.6);border:0;padding:9px 16px;font-family:var(--mono);
+  font-size:11px;font-weight:700;letter-spacing:.16em;cursor:pointer;text-transform:uppercase;display:flex;gap:8px;align-items:center}
+.seg button.active{background:var(--green);color:#08130c}
+.seg button:not(.active):hover{background:rgba(226,232,240,.07)}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:rgba(22,26,34,.7);color:rgba(248,250,252,.65);border-radius:999px;
+  padding:7px 13px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.12em;cursor:pointer;
+  text-transform:uppercase;transition:all .15s;display:flex;gap:7px;align-items:center}
+.chip:hover{border-color:rgba(248,250,252,.4);color:var(--paper)}
+.chip.active{color:#0a0d10;border-color:transparent}
+.dot{width:8px;height:8px;border-radius:2px;display:inline-block}
+.search{flex:1;min-width:180px;background:rgba(22,26,34,.7);border:1px solid var(--line);border-radius:10px;color:var(--paper);
+  font-family:var(--mono);font-size:12px;padding:9px 14px;outline:none;letter-spacing:.05em}
+.search:focus{border-color:var(--green)}
+.btn{font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+  border-radius:10px;padding:10px 16px;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
+  background:rgba(22,26,34,.8);color:var(--paper);transition:all .15s;text-decoration:none}
+.btn:hover{transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,#F59E0B,#D97706);border-color:transparent;color:#1a1204}
+.btn-gold:hover{box-shadow:0 6px 26px rgba(245,158,11,.35)}
+.btn-green{background:var(--green);border-color:transparent;color:#08130c}
+.btn-ghost{background:transparent}
+.btn svg{width:14px;height:14px}
+.count-pill{font-size:10px;letter-spacing:.2em;color:rgba(248,250,252,.45)}
+
+/* ---------- GRID ---------- */
+main{position:relative;z-index:10;max-width:1480px;margin:0 auto;padding:34px 40px 120px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:26px}
+.card-tilt{perspective:1400px}
+.card{position:relative;border-radius:18px;transform-style:preserve-3d;transition:transform .12s ease-out;will-change:transform;
+  background:var(--panel);border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.card.dragover{outline:2px dashed var(--green);outline-offset:3px}
+.card-art{position:relative;border-radius:18px 18px 0 0;overflow:hidden;background:#0a0c0f;cursor:grab}
+.card-art svg{display:block;width:100%;height:auto}
+.card-glare{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s;mix-blend-mode:screen;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.22),rgba(125,211,252,.10) 35%,transparent 60%)}
+.card:hover .card-glare{opacity:1}
+.card-drop-hint{position:absolute;inset:0;display:none;place-items:center;background:rgba(13,15,18,.78);z-index:5;
+  color:var(--green);font-size:11px;letter-spacing:.22em;text-transform:uppercase;text-align:center;line-height:2;pointer-events:none}
+.card.dragover .card-drop-hint{display:grid}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;border-top:1px solid var(--line)}
+.card-meta .t{font-family:var(--disp);font-weight:700;font-size:13.5px;line-height:1.2;text-transform:uppercase;letter-spacing:.02em}
+.card-meta .s{font-size:9.5px;letter-spacing:.18em;color:rgba(248,250,252,.45);margin-top:4px;text-transform:uppercase}
+.card-actions{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);background:rgba(13,15,18,.6);
+  color:rgba(248,250,252,.7);display:grid;place-items:center;cursor:pointer;transition:all .15s}
+.icon-btn:hover{color:var(--green);border-color:var(--green)}
+.icon-btn svg{width:15px;height:15px}
+.card-badge{position:absolute;top:12px;left:12px;z-index:4;font-size:9px;font-weight:700;letter-spacing:.2em;
+  padding:5px 10px;border-radius:6px;background:rgba(13,15,18,.82);border:1px solid var(--line);text-transform:uppercase;
+  display:flex;gap:7px;align-items:center;backdrop-filter:blur(4px)}
+.pillar-tag{position:absolute;top:12px;right:12px;z-index:4;font-size:9px;font-weight:700;letter-spacing:.18em;
+  padding:5px 10px;border-radius:6px;color:#0a0d10;text-transform:uppercase}
+.empty{grid-column:1/-1;text-align:center;padding:80px 20px;color:rgba(248,250,252,.4);font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:80;display:none;place-items:center;padding:30px}
+.modal.open{display:grid}
+.modal-bg{position:absolute;inset:0;background:rgba(8,10,12,.86);backdrop-filter:blur(8px)}
+.modal-box{position:relative;z-index:2;width:min(1280px,96vw);max-height:92vh;overflow:auto;background:var(--panel);
+  border:1px solid var(--line);border-radius:20px;display:grid;grid-template-columns:minmax(0,5fr) minmax(300px,4fr);gap:0}
+.modal-preview{padding:26px;background:#0a0c0f;display:flex;flex-direction:column;gap:16px;border-right:1px solid var(--line)}
+.modal-preview .art{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.modal-preview .art svg{display:block;width:100%;height:auto}
+.modal-side{padding:26px;display:flex;flex-direction:column;gap:18px;overflow:auto}
+.modal-side h3{font-family:var(--disp);font-weight:800;font-size:24px;line-height:1.05;text-transform:uppercase;letter-spacing:-.01em}
+.modal-kicker{font-size:10px;letter-spacing:.24em;color:var(--green);text-transform:uppercase}
+.field label{display:block;font-size:9.5px;letter-spacing:.22em;color:rgba(248,250,252,.45);text-transform:uppercase;margin-bottom:7px}
+.field textarea{width:100%;min-height:120px;background:var(--ink);border:1px solid var(--line);border-radius:10px;
+  color:var(--silver);font-family:var(--mono);font-size:11px;line-height:1.65;padding:12px;resize:vertical;outline:none}
+.field textarea:focus{border-color:var(--green)}
+.field textarea.small{min-height:84px}
+.modal-btns{display:flex;flex-wrap:wrap;gap:8px}
+.modal-close{position:absolute;top:14px;right:14px;z-index:5}
+.dropzone{border:1.5px dashed rgba(16,232,104,.4);border-radius:12px;padding:16px;text-align:center;font-size:10px;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(16,232,104,.8);cursor:pointer;transition:all .15s;line-height:1.8}
+.dropzone:hover,.dropzone.over{background:rgba(16,232,104,.08)}
+
+/* ---------- PROGRESS / TOAST ---------- */
+.progress{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(8,10,12,.88);backdrop-filter:blur(8px)}
+.progress.open{display:grid}
+.progress-box{width:min(480px,90vw);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:30px}
+.progress-box h4{font-family:var(--disp);font-size:18px;text-transform:uppercase;margin-bottom:6px}
+.progress-box p{font-size:10.5px;letter-spacing:.14em;color:rgba(248,250,252,.5);text-transform:uppercase;margin-bottom:18px}
+.bar{height:8px;border-radius:99px;background:var(--ink);overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .2s}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);z-index:120;opacity:0;pointer-events:none;
+  background:var(--paper);color:#0a0d10;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:12px 22px;border-radius:99px;transition:all .3s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.holo-sheen{animation:holoShift 7s ease-in-out infinite}
+@keyframes holoShift{0%,100%{opacity:.12}50%{opacity:.32}}
+@media(max-width:900px){.modal-box{grid-template-columns:1fr}.toolbar{padding:12px 18px}header,main{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<header>
+  <div class="brand-row">
+    <div class="brand">
+      <div class="brand-mark">E</div>
+      <div>
+        <h1>ExMe <em>Arquivo</em></h1>
+        <div class="sub">Casa do Colecionador Moderno · Gerador de Publicações</div>
+      </div>
+    </div>
+    <div class="brand-meta">
+      Coleção <b>Nº 001–060</b><br>
+      Feed 1080×1350 · Story 1080×1920<br>
+      6 Pilares · 6 Arquétipos · PT-PT
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <div class="seg" id="fmtSeg">
+      <button data-fmt="feed" class="active"><i data-lucide="image"></i>Feed 4:5</button>
+      <button data-fmt="story"><i data-lucide="smartphone"></i>Story 9:16</button>
+    </div>
+    <div class="chips" id="pillarChips"></div>
+    <div class="chips" id="archChips"></div>
+    <input class="search" id="search" placeholder="procurar na coleção…">
+    <button class="btn btn-green" id="pillarZipBtn"><i data-lucide="package"></i>ZIP do pilar</button>
+    <button class="btn btn-gold" id="masterZipBtn"><i data-lucide="boxes"></i>ZIP master · 60</button>
+  </div>
+</div>
+
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-box">
+    <button class="icon-btn modal-close" data-close><i data-lucide="x"></i></button>
+    <div class="modal-preview">
+      <div class="seg" style="align-self:flex-start" id="modalFmtSeg">
+        <button data-fmt="feed" class="active">Feed 4:5</button>
+        <button data-fmt="story">Story 9:16</button>
+      </div>
+      <div class="art" id="modalArt"></div>
+    </div>
+    <div class="modal-side">
+      <div>
+        <div class="modal-kicker" id="modalKicker"></div>
+        <h3 id="modalTitle"></h3>
+      </div>
+      <div class="dropzone" id="modalDrop"><i data-lucide="image-plus"></i><br>Arrasta uma imagem aqui<br>ou clica para trocar a mídia</div>
+      <div class="field">
+        <label>Legenda.txt — copy PT-PT</label>
+        <textarea id="modalCaption" readonly></textarea>
+      </div>
+      <div class="field">
+        <label>image_prompt.txt — Midjourney v6 / Flux.1</label>
+        <textarea class="small" id="modalPrompt" readonly></textarea>
+      </div>
+      <div class="modal-btns">
+        <button class="btn btn-green" data-exp="png-feed"><i data-lucide="image"></i>PNG feed 2×</button>
+        <button class="btn btn-green" data-exp="png-story"><i data-lucide="smartphone"></i>PNG story 2×</button>
+        <button class="btn" data-exp="svg-feed"><i data-lucide="file-code"></i>SVG feed</button>
+        <button class="btn" data-exp="svg-story"><i data-lucide="file-code"></i>SVG story</button>
+        <button class="btn btn-gold" data-exp="zip"><i data-lucide="package"></i>Pasta ZIP</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="progress" id="progress">
+  <div class="progress-box">
+    <h4 id="progTitle">A empacotar o arquivo</h4>
+    <p id="progLabel">a preparar cromos…</p>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   EXME · ARQUIVO DO COLECIONADOR MODERNO
+   Motor paramétrico de 60 publicações · 6 pilares · 6 arquétipos visuais
+============================================================================ */
+
+/* ----------------------------- 1. DADOS BASE ----------------------------- */
+const MONTHS = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+
+const PILLARS = {
+  nostalgia:  { nome:'Nostalgia Emocional',     cor:'#F59E0B', count:18,
+    tag:'Memória afetiva & rituais de infância' },
+  humor:      { nome:'Humor de Colecionador',   cor:'#10E868', count:12,
+    tag:'Identificação cômica & recreio' },
+  comunidade: { nome:'Comunidade & Interação',  cor:'#7DD3FC', count:12,
+    tag:'Trocas, batalhas & comentários' },
+  ritual:     { nome:'Ritual & Gamificação',    cor:'#C084FC', count:9,
+    tag:'Anatomia da saqueta & dopamina' },
+  cultura:    { nome:'Cultura & Storytelling',  cor:'#E2E8F0', count:6,
+    tag:'Mitos, formação & lendas locais' },
+  produto:    { nome:'Produto & Phygital',      cor:'#F8FAFC', count:3,
+    tag:'Conversão subtil & álbum físico' }
+};
+
+const ARCHS = {
+  1:{ nome:'The Vault · Trading Card Foil', curto:'VAULT',      desc:'Cromo monumental com foil holográfico' },
+  2:{ nome:"Collector's Archive · Scrapbook", curto:'SCRAPBOOK', desc:'Fanzine, fita-cola e carimbos manuais' },
+  3:{ nome:'Digital Nostalgia · Fórum 2000', curto:'FÓRUM 2000', desc:'Janela retro de fórum de trocas' },
+  4:{ nome:'Brutal Quote · Manifesto',       curto:'MANIFESTO',  desc:'Tipografia massiva sobre fotografia' },
+  5:{ nome:'Split Evidence · Relíquia',      curto:'RELÍQUIA',   desc:'Foto desgastada vs catalogação fria' },
+  6:{ nome:'Carrossel Contínuo · Ritual',    curto:'RITUAL 3×',  desc:'Sequência panorâmica de 3 lâminas' }
+};
+
+/* bancos de imagens Unsplash (futebol/estádio/arquivo) — fallback procedural automático */
+const U = {
+  a:'1574629810360-7efbbe195018', b:'1522778119026-d647f0596c20', c:'1579952363873-27f3bade9f55',
+  d:'1517466787929-bc90951d0974', e:'1551958219-acbc608c6377',   f:'1431324155629-1a6deb1dec8d',
+  g:'1508098682722-e99c43a406b2', h:'1560272564-c83b66b1ad12',   i:'1553778263-73a83bab9b0c',
+  j:'1459865264687-595d652de67e', k:'1486286701208-1d58e9338013', l:'1610552050890-fe9935b0e6eb'
+};
+const POOL_IMG = {
+  nostalgia:['a','b','d','f','g','k'], humor:['c','d','e','h','j'],
+  comunidade:['b','e','g','h','l'], ritual:['a','c','d','f','k'],
+  cultura:['a','b','f','g','j'], produto:['f','h','i','l']
+};
+const FALLBACK_SEED = {
+  nostalgia:'vintage-football-memory', humor:'funny-sticker-pile', comunidade:'crowd-stadium',
+  ritual:'opening-packet-ritual', cultura:'old-stadium-culture', produto:'digital-album'
+};
+
+/* ---- sementes de conteúdo: [título, destaque, corpo, nota de arquivo, prompt EN, arquétipo, passos?] ---- */
+const SEEDS = {
+nostalgia:[
+ ['O Cheiro da Saqueta','Há um cheiro que não se esquece','Papel químico, cola fresca e a promessa de um brilhante. A infância inteira cabia num envelope de 50 escudos.','QUIOSQUE · 1997',
+  'extreme close-up of a torn open foil football sticker packet on a worn wooden counter of a 1990s portuguese quiosque, warm amber light, floating dust particles, faded 35mm film photography, nostalgic color grade, shallow depth of field',2],
+ ['O Último Cromo','O cromo que faltava nunca vinha','Completar a caderneta era uma missão. E o último? O último era uma lenda — difícil como um penálti no último minuto.','CADERNETA 98/99',
+  'a young boy in 1990s portugal sitting at a kitchen table staring at an almost complete sticker album, one empty slot glowing softly, warm tungsten light, 35mm film grain, nostalgic cinematic mood, faded greens and ambers',4],
+ ['Colar Sem Vincos','Colar era um ritual de cirurgião','Posição marcada com a unha, respiração funda, e aquele segundo de eternidade antes de o cromo tocar o papel.','MESA DA COZINHA · 1999',
+  'close-up of careful child hands placing a football sticker into a paper album with surgical precision, glue stick, ruler, warm desk lamp light, 1990s kitchen, 35mm film, heavy grain, intimate nostalgic atmosphere',5],
+ ['A Mesada de Domingo','A mesada não se gastava. Investia-se.','Cem escudos em cromos era melhor do que qualquer cofre. O quiosque era a nossa bolsa de valores.','BOLSA DE VALORES · 2001',
+  'a kid clutching portuguese escudo coins at a newspaper kiosk packed with sticker packets, sunday morning light, nostalgic 1990s southern europe street, 35mm film photography, warm faded tones, cinematic',3],
+ ['A Caixa de Sapatos','A gaveta dos repetidos era um tesouro','Ninguém os queria colados. Todos os queríamos ter. Lado a lado, em monte, à espera de uma troca melhor.','GAVETA DOS REPETIDOS',
+  'open shoe box overflowing with hundreds of duplicate football stickers in a messy bedroom drawer, soft window light, dust motes, 1990s nostalgia, 35mm film grain, warm faded color grade, top-down cinematic shot',2],
+ ['O Cromo do Avô','O vício passou de mão em mão','Ele colecionou nos anos 60. Tu nos anos 90. O mesmo brilho nos olhos, três gerações depois.','HERANÇA · 3 GERAÇÕES',
+  'grandfather and grandson hands holding vintage football stickers together over an old worn album, golden hour light through a lace curtain, 35mm film photography, tender nostalgic mood, warm sepia-tinged grade',5],
+ ['O Senhor do Quiosque','Havia sempre quem nos desse a saqueta certa','Ele sabia os números que faltavam de cor. Nunca disse como. Segredo comercial.','QUIOSQUE DA ESQUINA',
+  'a weathered friendly old kiosk owner in a small portuguese town handing a sticker packet to a child across a wooden counter, cigarette smoke, morning light, 1990s documentary photography, 35mm grain',3],
+ ['Caderneta da Época','Uma caderneta por ano. Uma vida por época.','Capa gasta, cantos dobrados, contracapa a segurar com fita-cola. Estado: absolutamente perfeita.','ÉPOCA 96/97',
+  'a stack of worn vintage football sticker albums from different seasons on a bedroom shelf, cracked spines, tape repairs, soft afternoon light, 35mm film, nostalgic faded tones, shallow depth of field',2],
+ ['A Primeira Troca','A primeira troca nunca se esquece','Dois repetidos por um que faltava. Aperto de mão no recreio. Negócio fechado para a vida.','RECREIO · 1998',
+  'two children in a school playground shaking hands over swapped football stickers, other kids watching, 1990s portugal, golden late afternoon light, documentary 35mm film, nostalgic warm grade, cinematic',['MOSTRAR','NEGOCIAR','FECHAR']],
+ ['O Brilhante Impossível','Havia um foil que não saía a ninguém','Toda a escola o procurava. Dizia-se que aparecia só nas saquetas das férias grandes. Ninguém nunca provou.','RARIDADE LENDÁRIA',
+  'a single holographic shiny football sticker glowing on a dark wooden surface, dramatic spotlight, rainbow foil reflections, surrounded by dull matte stickers, cinematic product photography, 35mm grain, dark moody background',1],
+ ['Noite de Colar','Colava-se à noite, à hora do Mundial','Cromos espalhados na mesa da cozinha, a televisão no fundo, e a mãe a dizer que a cola ainda te fazia falta.','MUNDIAL · NOITE',
+  'late night kitchen table covered with stickers and an open album, old television glowing with a football match in the background, warm tungsten light, 1990s nostalgia, 35mm film grain, intimate cinematic wide shot',4],
+ ['Férias Grandes','Verão era saquetas ao virar da esquina','Piscina, gelado e uma caderneta na mochila. Os dias eram longos e os cromos não acabavam.','VERÃO · 2000',
+  'summer scene of portuguese children with a sticker album at an old public swimming pool, ice cream, bright sun, faded 1990s holiday photograph look, 35mm film grain, warm nostalgic color grade, candid documentary',2],
+ ['A Primeira Caderneta','Nunca mais foste o mesmo','Antes eras criança. Depois da primeira saqueta, eras colecionador. Para sempre.','INICIAÇÃO',
+  'a child holding their very first sticker album with wide eyes of wonder, soft birthday light, torn wrapping paper around, 35mm film photography, nostalgic warm tones, shallow depth of field, cinematic close-up',4],
+ ['Cromo na Carteira','Andavas com ele para todo o lado','Dobrado? Nem pensar. Na carteira, no bolso de cima, embrulhado em papel vegetal. Relíquia.','TRANSPORTE DE RELÍQUIA',
+  'a prized football sticker carefully wrapped in tracing paper inside a childs worn wallet, macro shot, fabric texture, soft directional light, 35mm film grain, nostalgic moody tones, cinematic macro photography',2],
+ ['O Cromo da Mudança','A mudança levou-me a caderneta','Caixas, sótão, anos depois. Já não estava. Até hoje, há um número que me falta.','PERDIDO NA MUDANÇA · 2003',
+  'a dusty attic with cardboard moving boxes and a single old sticker album left open on the floor, melancholic light beam through a small window, 35mm film photography, faded nostalgic grade, cinematic loneliness',5],
+ ['Pai e Filho','O vício é hereditário','Ele abriu-te a primeira saqueta. Hoje abres tu as dele. A caderneta é sempre a mesma — só muda a mão.','PAI → FILHO',
+  'father and adult son sitting on a sofa each holding sticker packets, laughing, two albums on the coffee table then and now, warm evening living room light, 35mm film, tender nostalgic atmosphere, cinematic',4],
+ ['O Recreio Era Bolsa','No recreio negociava-se sério','Valores, estratégia, análise de mercado. Tudo aprendido antes dos 12 anos, com cromos em cima do muro.','MERCADO REGULADO',
+  'a crowd of schoolchildren trading stickers on a stone wall in a portuguese school playground during break, intense negotiation gestures, 1990s documentary photography, 35mm grain, warm faded grade, energetic wide shot',3],
+ ['Ainda Guardas?','A pergunta que derrete qualquer colecionador','Claro que guardas. Está no sótão, na gaveta, na mãe. A caderneta nunca se deita fora. Nunca.','ARQUIVO PERMANENTE',
+  'a grown person rediscovering their childhood sticker album in a cardboard box, emotional close-up of their face and hands, soft natural light, 35mm film photography, deeply nostalgic cinematic mood, warm tones',1]
+],
+humor:[
+ ['Gaveta Transborda','A gaveta não fecha. Nós não queremos fechá-la','Quinhentos repetidos, zero arrependimentos. Cada um teve o seu momento de esperança.','STOCK: 500+',
+  'comically overstuffed drawer bursting with hundreds of duplicate football stickers, some spilling onto the floor, warm bedroom light, humorous documentary style, 35mm film grain, nostalgic faded tones',2],
+ ['Negociador do Recreio','O melhor negociador da escola tinha 10 anos','Convencia-te a dar três cromos por um. E tu ainda agradecias. Que talento.','TALENTO NATURAL',
+  'a confident 10 year old kid in a school playground gesturing like a wall street trader while holding stickers, other kids listening impressed, funny documentary photography, 1990s 35mm film, warm nostalgic grade',3],
+ ['Colou Torto','O cromo ficou torto. O mundo também','Há feridas que nem fita-cola resolve. 1998, canto inferior direito. Ainda dói.','TRAUMA · CANTO INF. DTO.',
+  'extreme close-up of a slightly crooked sticker in an old album with a dramatic tragic spotlight like a crime scene, funny cinematic lighting, 35mm film grain, moody humorous mood, dark background',4],
+ ['Apalpar o Envelope','Técnica de apalpar: nível mestre','Dedos treinados para detectar o relevo do brilhante através do papel. Ciência, não sorte.','MÉTODO CERTIFICADO',
+  'comically serious child fingers carefully feeling a sealed sticker packet like a blindfolded expert, macro shot, dramatic light, humorous documentary 35mm film photography, warm nostalgic tones, shallow depth of field',['APALPAR','SUSPEITAR','NADA']],
+ ['17 Vezes o Suplente','Tenho 17 repetidos do mesmo. 17','Ele nunca jogou um minuto. Eu nunca deixei de o tirar. Karma.','Nº 23 · 17 EXEMPLARES',
+  'seventeen identical football stickers of a substitute goalkeeper lined up in a grid on a bedroom wall like a funny obsession, soft light, 35mm film grain, humorous documentary style, nostalgic faded grade',2],
+ ['Mesada? Que Mesada?','A mesada acabava na terça','Restantes seis dias: sobrevivência, negociação e muita, muita lábia.','SALDO: 0$00',
+  'a kid showing empty pockets with a dramatic sad face outside a kiosk full of sticker packets, funny documentary photography, 1990s portugal street, 35mm film grain, warm cinematic nostalgic grade',3],
+ ['O Cromo Ninguém Quer','Há um cromo que sai a toda a gente','É o troco das trocas, o recheio da gaveta, o derradeiro voto de pesar.','MOEDA DE TROCO',
+  'one mundane football sticker presented like a legendary rare card on a velvet pedestal with dramatic museum spotlight, ironically glorified, funny cinematic product shot, 35mm grain, dark moody background',1],
+ ['Bolsa do Balneário','O balneário era Wall Street','Cromos dentro dos sapatos, trocas depois do duche, insider trading proibido a pais.','APÓS O DUCHE',
+  'kids in a football locker room in towels excitedly trading stickers between bench and shoes, steam, chaotic funny energy, documentary 35mm film photography, 1990s nostalgic warm grade, cinematic wide shot',3],
+ ['Não Dobres!','Dobrar um cromo era crime de lesa-majestade','Uma vinco e perdia 70% do valor. Toda a gente sabia as regras.','ARTIGO 1.º',
+  'dramatic close-up of a child hand about to accidentally fold a precious sticker, another hand reaching to stop it in slow motion, funny action photography, 35mm film grain, cinematic warm nostalgic light',4],
+ ['Para a Semana Sai','A promessa eterna do brilhante','Segunda juro que sai. Terça também. Quarta também. A esperança é eterna — e cara.','PROMESSA ETERNA',
+  'a kid praying to a sealed sticker packet like a shrine with candles, funny religious parody scene, warm dim room light, humorous cinematic 35mm photography, film grain, nostalgic tones',4],
+ ['Ordem Alfabética','Organizar cromos é TOC de nível superior','Por equipas, por número, por brilho. Quem desarruma não entra no quarto.','SISTEMA: NÃO TOCAR',
+  'a bedroom floor with stickers meticulously sorted into perfect labeled rows by team and number, a kid proudly standing arms crossed, top-down funny documentary shot, 35mm film, warm nostalgic grade',2],
+ ['Cromo na Manga','Esconder o bom cromo era arte','Sorriso inocente, manga reservada. O mestre do poker face nasceu no recreio.','POKER FACE · NÍVEL 10',
+  'a school kid with an innocent smile hiding a shiny sticker up their sleeve during a trade, other kid suspicious, funny playground documentary, 1990s 35mm film photography, warm faded nostalgic grade',2]
+],
+comunidade:[
+ ['A Tua Primeira Caderneta','Qual foi a primeira caderneta que completaste?','Conta tudo: ano, capa, o cromo que mais custou. A nostalgia agradece nos comentários.','COMUNIDADE EXME',
+  'a vibrant community wall covered with hundreds of handwritten sticky notes and small photos of sticker albums, warm gallery light, diverse hands placing notes, documentary 35mm film, cinematic warm grade',3],
+ ['O Repetido Mais Triste','Mostra-nos o repetido que mais te saiu','Aquele que tens em 20 exemplares. Posta aí. Não tenhas vergonha — ele já sofreu bastante.','CONSULTA PÚBLICA',
+  'a funny mugshot-style lineup of the same duplicate sticker repeated many times pinned on a cork board with sad handwritten labels, warm desk light, 35mm film grain, humorous documentary style',2],
+ ['Batalha de Cromos Bizarros','Quem tem o cromo mais estranho da comunidade?','Guarda-redes com luvas cor-de-rosa? Craque de cabelo azul? Vale tudo. Mostra o teu.','CONFRONTO ABERTO',
+  'two dramatic facing sports cards floating in mid-air with holographic foil effects colliding like a duel, sparks of rainbow light, dark cinematic background, product macro photography, 35mm grain, epic funny mood',1],
+ ['Trocas nos Comentários','A bolsa está aberta','Deixa o número que te falta e o repetido que dás. A comunidade ExMe trata do resto.','MERCADO ABERTO 24/7',
+  'a nostalgic early 2000s computer screen glowing in a dark bedroom showing a colorful forum about sticker trading, stickers scattered on the desk, warm CRT glow, 35mm film, cinematic documentary photography',3],
+ ['Quem Tem o 247?','Falta-te o quê? Grita','Número, equipa, ano. Há sempre alguém com o cromo exato na gaveta certa.','NÚMERO PROCURADO',
+  'a giant missing sticker slot shaped like a glowing question mark on an album page, dramatic dark background with green neon light, cinematic concept photography, 35mm film grain, moody atmospheric',4],
+ ['A Tua Troca Lendária','Conta-nos a troca que ficou para a história','Aquela que contas ao jantar de Natal até hoje. Nós queremos detalhes.','RELATO OFICIAL',
+  'a group of adult friends around a christmas dinner table laughing and gesturing while passing an old sticker album, warm festive light, documentary 35mm film photography, nostalgic cinematic warm grade',3],
+ ['O Mais Antigo da Gaveta','Qual é o cromo mais antigo que guardas?','Anos 70? 80? Fotografa, posta, e deixa o pessoal doente de inveja.','PEÇA DE MUSEU',
+  'a very old yellowed football sticker from the 1970s displayed under museum glass with a catalog tag, soft archive lighting, dust particles, 35mm film photography, cinematic sepia mood, shallow depth of field',5],
+ ['Apresenta-te','Novo por aqui? Conta-nos tudo','De onde és, que caderneta colecionas, que número te falta. Bem-vindo à casa do colecionador.','NOVO FICHEIRO',
+  'welcoming scene of a young collector entering a cozy clubhouse full of sticker albums on shelves, warm golden light, members waving, documentary 35mm film photography, cinematic nostalgic warm tones',2],
+ ['Cromo da Tua Terra','Qual é o craque da tua terra?','Aquele que jogou no pelado da freguesia e virou lenda. Marca-o nos cromos da memória.','EDIÇÃO LOCAL',
+  'a grassroots football match on a dusty village pitch in rural portugal, local crowd cheering, late golden light, documentary 35mm film photography, faded nostalgic grade, cinematic wide shot, gritty authentic',3],
+ ['Dupla Perfeita','Quem é o teu parceiro de trocas?','Marca o amigo que completa a tua caderneta desde o recreio. A dupla nunca se separa.','DUPLA CERTIFICADA',
+  'two best friends kids standing back to back holding sticker albums like champions of the playground, dramatic heroic sunset light, funny epic sports poster style, 35mm film grain, nostalgic warm cinematic grade',4],
+ ['Marca o Amigo','Marca quem tem o cromo que te falta','Ele diz que não tem. Ele tem. Nós sabemos. Ele sabe. Marca.','OPERAÇÃO MARCAÇÃO',
+  'a kid dramatically pointing across the playground at another kid hiding a sticker behind their back, comedic standoff, warm afternoon light, documentary 35mm film, 1990s nostalgic grade, cinematic energy',['MARCAR','REVISTAR','TROCAR']],
+ ['Sextou na ExMe','Sexta é dia de abrir saquetas','Quem abriu hoje? O que é que saiu? Relatório de abertura nos comentários, sem filtros.','RELATÓRIO DE SEXTA',
+  'friday evening scene of friends at a cafe table ripping open sticker packets together, phones out, beers, excited faces, warm social light, documentary 35mm film photography, cinematic nostalgic tones',['ABRIR','REVELAR','PARTILHAR']]
+],
+ritual:[
+ ['Anatomia da Saqueta','Três gestos. Um coração aos saltos','Do bolso ao brilho: o ritual completo, milímetro a milímetro, como quem desmonta um relógio.','MANUAL DE PROCEDIMENTOS',
+  'cinematic triptych of hands opening a football sticker packet in three stages, dark slate background with neon green rim light, macro product photography, film grain, dramatic editorial style, high detail',['APALPAR','RASGAR','REVELAR']],
+ ['A Técnica do Apalpar','Os dedos sabiam antes dos olhos','Pressão certa, ritmo lento, atenção ao relevo. O brilhante denunciava-se — para quem soubesse sentir.','TÉCNICA N.º 1',
+  'extreme macro of fingers gently pressing a sealed foil sticker packet against dark background, moody side light revealing texture, cinematic product photography, 35mm film grain, green and amber highlights',4],
+ ['Dopamina Dourada','O brilho. O mundo pára','Quando o dourado aparecia no rasgão, o recreio inteiro parava. Cinco segundos de pura dopamina.','RECOMPENSA MÁXIMA',
+  'a golden holographic football sticker emerging from a torn packet with explosive rainbow light rays, frozen moment of pure joy, dark moody background, epic cinematic product macro, 35mm film grain, lens flare',1],
+ ['ExMe Spinners','A roleta que revive o ritual','Rodar, esperar, rasgar — digitalmente. A mesma tensão, o mesmo brilho, sem gastar a mesada.','SISTEMA ATIVO',
+  'a retro-futuristic pixel art slot machine spinner interface floating above a hand holding a phone, glowing green and gold, dark room, nostalgic 2000s internet aesthetic meets modern product shot, cinematic 35mm grain',3],
+ ['O Som do Rasgar','Rasgar uma saqueta tem som próprio','É curto, seco e promissor. Quem coleciona reconhece-o a quilómetros de distância.','FREQUÊNCIA: 432 HZ',
+  'sound wave visual materializing from a tearing sticker packet in a dark studio, gold and green light trails, high-speed photography of foil mid-tear, cinematic macro, 35mm film grain, dramatic frozen motion',4],
+ ['Separar os Repetidos','O ritual pós-abertura: separar','Montes: para colar, repetidos, negociáveis. Meia hora de silêncio sagrado no quarto.','PROTOCOLO PÓS-ABERTURA',
+  'top-down view of a desk with stickers being sorted into three neat piles by careful hands, warm desk lamp circle of light, dark room around, 35mm film grain, intimate ritualistic documentary mood, nostalgic tones',2],
+ ['Cinco Segundos','Entre rasgar e ver, há cinco segundos infinitos','Tudo pode acontecer. O mundo suspende. O cromo ainda não existe — e já é tudo.','INTERVALO MÁGICO',
+  'frozen cinematic moment of a half-torn sticker packet with light beaming from inside, dust suspended in air, child eyes wide in anticipation, dramatic darkness around, 35mm film grain, epic macro, timeless mood',['RASGAR','SUSPENDER','VER']],
+ ['Alinhar as Saquetas','As saquetas em linha, como munição','Não se abre tudo de uma vez. Respeita-se o ritual. Uma de cada vez, como manda a tradição.','MUNIÇÃO CONTADA',
+  'a perfect row of unopened foil sticker packets lined up like ammunition on a dark wooden desk, military-precise composition, moody side light, cinematic product photography, 35mm film grain, green and gold accents',2],
+ ['Dia de Saqueta','Sexta-feira. Dia sagrado','Trabalho? Escola? Depois. Primeiro abre-se a saqueta. Há prioridades.','FERIADO NÃO OFICIAL',
+  'a hand slamming a fresh sticker packet on a table like a gavel in a dramatic courtroom of light, dark background with golden spotlight, humorous epic product photography, 35mm film grain, cinematic freeze frame',4]
+],
+cultura:[
+ ['Mito do Cromo Valioso','Dizia-se que valia uma fortuna','Ninguém nunca conheceu ninguém que o vendesse. O mito valia mais que o cromo — e ainda vale.','LENDÁRIO · NÃO COTADO',
+  'a mythical single vintage football sticker on a black velvet stand under a single museum spotlight, price tag with question marks, dust in the light beam, cinematic archive photography, 35mm grain, sepia mood',5],
+ ['O Craque do Bairro','Toda a terra tem o seu 10','Jogou no pelado, nunca passou ao Sporting. Mas no bairro, ninguém o esquece. O cromo é dele.','Lenda local · Nº 10',
+  'a charismatic local amateur football player number 10 posing on a rough village pitch, worn boots, crowd of neighbours behind a fence, golden hour, documentary 35mm film, gritty nostalgic portugal, cinematic portrait',1],
+ ['Campo de Terra Batida','O futebol mais puro joga-se no pelado','Sem relvado, sem rede, sem cadeiras. A formação começa onde acaba o alcatrão.','TERRENO NÃO CERTIFICADO',
+  'kids playing barefoot football on a dusty dirt pitch in a portuguese village, improvised goalposts, late afternoon golden dust cloud, documentary 35mm film photography, faded nostalgic grade, epic wide cinematic shot',4],
+ ['Balneário de Formação','O balneário ensina mais que o treinador','Hierarquia, respeito, gargalhadas. Os cromos também se trocavam ali — depois do duche, antes da sova.','CÂMARA DE FORMAÇÃO',
+  'a humble old football locker room with wooden benches, hanging jerseys, boots and a pile of stickers on the bench, steam in warm window light, documentary 35mm film, nostalgic atmospheric mood, cinematic detail',2],
+ ['A Fotografia do Adepto','Uma fotografia vale uma caderneta','Cachecol ao pescoço, banco de pedra, 1978. O adepto não mudou. Mudou só a máquina fotográfica.','REGISTO Nº 041 · 1978',
+  'a vintage 1970s photograph of a portuguese football fan with a scarf on a stone bench in a stadium, faded sepia silver gelatin look, scratches and dust, held by modern hands against dark archive background, split editorial',5],
+ ['Número 10 da Terra','Há camisolas que nunca se retiram','O 10 do clube da freguesia pertence-lhe para sempre. Nos cromos e na memória.','RETIDO PARA SEMPRE',
+  'a faded number 10 jersey hanging on a nail in a village clubhouse wall next to old team photos and stickers, sacred light beam through dusty window, documentary 35mm film, nostalgic sepia cinematic mood, shallow depth',1]
+],
+produto:[
+ ['Smart Match','O algoritmo que encontra o que te falta','Digitalizas a caderneta, o ExMe cruza os teus repetidos com colecionadores perto de ti. O número 247? Já está a caminho.','MOTOR DE CORRESPONDÊNCIA',
+  'a glowing smartphone showing a smart matching interface connecting sticker collectors on a stylized map, dark moody desk with real stickers around, green neon and gold accents, cinematic product photography, 35mm grain',3],
+ ['Do Ecrã para a Gaveta','Completas no telemóvel. Recebes em casa','Caderneta completa no ecrã, impressa em papel de verdade, com capa dura e tudo. A nostalgia com logística moderna.','CICLO PHYGITAL',
+  'cinematic triptych: hands completing a sticker album on a phone, a printing press producing a real hardcover album, a parcel delivered to a happy home doorstep, warm modern light, 35mm film, premium commercial look',['COMPLETAR','IMPRIMIR','RECEBER']],
+ ['A Gaveta Digital','Os repetidos organizados, finalmente','A caixa de sapatos foi-se. Agora os repetidos vivem no bolso — e ainda negociam por ti enquanto dormes.','ARQUIVO OTIMIZADO',
+  'a holographic floating digital archive of duplicate stickers cards orbiting a smartphone over a dark desk, gold and green glow, premium product commercial photography, cinematic dark background, 35mm film grain, futuristic nostalgic',1]
+]};
+
+/* pontes narrativas e CTAs por pilar */
+const NARR = {
+  nostalgia:['Há quem colecione cromos. Nós colecionamos memória.','A caderneta fechou. O sentimento, nunca.','Não era só papel. Era a infância inteira, colada sem vincos.'],
+  humor:['Quem nunca, não sabe. Quem sim, reconhece-se.','O sofrimento é real. As gargalhadas também.','A vida de colecionador é 10% brilho, 90% negociação.'],
+  comunidade:['A ExMe não é um álbum. É uma comunidade de gente que nunca deixou de trocar.','Um cromo só vale alguma coisa quando há alguém para trocar.','A gaveta é tua. A rede é nossa.'],
+  ritual:['O segredo nunca foi o cromo. Foi o ritual.','Cada rasgão é um pequeno nascimento.','A dopamina não vem do cromo. Vem do intervalo.'],
+  cultura:['O futebol de formação não forma só jogadores. Forma memória coletiva.','Toda a lenda local merece um cromo.','A história do futebol português joga-se nos pelados.'],
+  produto:['A tradição não precisa de ficar no passado. Precisa é de boa logística.','Digital por fora. Colecionador por dentro.']
+};
+const CTAS = {
+  nostalgia:['Conta-nos nos comentários: qual é a memória que te volta sempre ao abrir uma saqueta?','Marca quem partilhou contigo a primeira caderneta.','Qual foi o último cromo da tua primeira caderneta? Revela aí.'],
+  humor:['Conta-te nos comentários — sem julgamentos. Quantos repetidos tens do mesmo?','Marca o amigo que negociava como um profissional no recreio.','Confessa: qual foi o teu maior trauma de cromos?'],
+  comunidade:['Deixa o número que te falta. A comunidade trata do resto.','Marca o teu parceiro de trocas de sempre.','Fotografa o teu repetido mais famoso e posta com #ArquivoExMe.'],
+  ritual:['Descreve-nos o teu ritual de abertura nos comentários.','Quem ainda apalpa a saqueta antes de rasgar? Reage aí.','Marca quem respeita o ritual a sério.'],
+  cultura:['Conheces a lenda do teu bairro? Conta-a nos comentários.','Qual é o craque da tua terra que merecia um cromo?','Marca quem te levou ao pelado pela primeira vez.'],
+  produto:['Quer completar a tua caderneta? O link está na biografia.','Digitaliza os teus repetidos e deixa o algoritmo trabalhar — link na bio.','A tua caderneta física pode estar a um clique. Espreita o link na bio.']
+};
+const TAGS_BASE = ['#cromos','#caderneta','#saqueta','#colecionador','#trocasdecromos','#futebolPT','#futeboldeformacao','#nostalgia','#ExMe','#casadocolecionador'];
+const TAGS_PILAR = {
+  nostalgia:['#memoriasdeinfancia','#saudadesdos90','#cromosdefutebol'],
+  humor:['#humordecolecionador','#recreio','#repetidos'],
+  comunidade:['#comunidadeExMe','#trocas','#cromosportugal'],
+  ritual:['#ritualdocolecionador','#aberturadesaqueta','#dopamina'],
+  cultura:['#futebolpopular','#lendaslocais','#futeboldepelado'],
+  produto:['#phygital','#albumdigital','#smartmatch']
+};
+const POSICOES = ['AVANÇADO','MÉDIO CRIATIVO','DEFESA CENTRAL','GUARDA-REDES','LATERAL ESQUERDO','TREINADOR DE BANCO'];
+const RARIDADE = [['COMUM',3],['RARO',4],['ÉPICO',4],['HOLOGRÁFICO',5]];
+const FORUM_USERS = ['cromo_mano92','saqueta_king','repetidos_anon','gatilho_foil','balnearioFC','admin_exme','nr10_da_terra'];
+
+/* ----------------------------- 2. GERAR 60 POSTS ----------------------------- */
+function hash(s){let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;}return Math.abs(h);}
+function slug(t){return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function unsplashURL(key){return 'https://images.unsplash.com/photo-'+U[key]+'?q=80&w=1200&auto=format&fit=crop';}
+function picsumURL(seed,fmt){const r=fmt==='story'?'1080/1920':'1080/1350';return 'https://picsum.photos/seed/'+seed+'/'+r;}
+
+function eraDate(pillar, i, id){
+  const h=hash(pillar+i);
+  let y;
+  if(pillar==='nostalgia') y=1994+(h%10);
+  else if(pillar==='humor') y=1998+(h%8);
+  else if(pillar==='cultura') y=1968+(h%31);
+  else y=2026;
+  const m=h%12, d=1+(h%28);
+  return String(d).padStart(2,'0')+'.'+MONTHS[m]+'.'+y;
+}
+
+/* placeholder procedural (offline / erro de rede) */
+function makePlaceholder(post, W, H){
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#161A22');g.addColorStop(.6,'#0D0F12');g.addColorStop(1,'#0a0c0f');
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(16,232,104,.22)';x.lineWidth=3;
+  x.beginPath();x.moveTo(W/2,0);x.lineTo(W/2,H);x.stroke();
+  x.beginPath();x.arc(W/2,H*.62,H*.28,0,Math.PI*2);x.stroke();
+  x.beginPath();x.arc(0,H*.62,H*.16,-Math.PI/2,Math.PI/2);x.stroke();
+  x.beginPath();x.arc(W,H*.62,H*.16,Math.PI/2,-Math.PI/2);x.stroke();
+  x.fillStyle='rgba(16,232,104,.5)';x.fillRect(W/2-9,H*.62-9,18,18);
+  for(let i=0;i<260;i++){const a=hash('ph'+post.id+i)%997/997;x.fillStyle='rgba(245,158,11,'+(0.05+a*.12)+')';
+    x.fillRect((a*W*3)%W,(hash('py'+i)*a%H+H)%H,2,2);}
+  x.font='800 '+Math.floor(W*.4)+'px Syne, Arial Black, sans-serif';x.textAlign='center';
+  x.fillStyle='rgba(226,232,240,.06)';x.fillText(post.id,W/2,H*.4);
+  x.font='700 '+Math.floor(W*.05)+'px "JetBrains Mono", monospace';x.fillStyle='rgba(16,232,104,.7)';
+  x.fillText('EXME · ARQUIVO',W/2,H*.9);
+  return c.toDataURL('image/jpeg',.85);
+}
+
+const POSTS=[];
+(function build(){
+  let n=0;
+  const order=['nostalgia','humor','comunidade','ritual','cultura','produto'];
+  order.forEach(pk=>{
+    SEEDS[pk].forEach((s,i)=>{
+      n++;
+      const id=String(n).padStart(2,'0');
+      const [t,h,b,note,prompt,arch,steps]=s;
+      const imgKey=POOL_IMG[pk][i%POOL_IMG[pk].length];
+      const hh=hash(t);
+      const rar=RARIDADE[hh%RARIDADE.length];
+      const post={
+        id, pillar:pk, arch: (typeof arch==='number'?arch:(arch?6:2)),
+        t,h,b,note,steps:Array.isArray(arch)?arch:steps,
+        serial:'EXM·26·'+String(100+n), date:eraDate(pk,i,n),
+        pos:POSICOES[hh%POSICOES.length], raridade:rar[0], rarN:rar[1],
+        imgURL:unsplashURL(imgKey),
+        imgFallback:picsumURL(FALLBACK_SEED[pk]+'-'+id,'feed'),
+        _img:null, imgData:null
+      };
+      post.slug=slug(t);
+      post.placeholder=makePlaceholder(post,540,675);
+      const pNar=NARR[pk][i%NARR[pk].length]||NARR[pk][0], cta=CTAS[pk][i%CTAS[pk].length];
+      const tags=[...TAGS_BASE,...TAGS_PILAR[pk]];
+      if(pk==='ritual'&&/spinner/i.test(t)) tags.push('#ExMeSpinners');
+      post.caption=h.toUpperCase()+'\n\n'+b+'\n\n'+pNar+'\n\n'+cta+'\n\n'+tags.join(' ');
+      const pStyle=', moody cinematic lighting, deep slate and electric green palette with amber accents, 35mm film grain, nostalgic editorial color grade, high detail';
+      post.promptTxt=
+        '# IMAGE PROMPT — FEED (4:5) · Midjourney v6 / Flux.1\n'+prompt+pStyle+' --ar 4:5 --style raw --v 6\n\n'+
+        '# IMAGE PROMPT — STORY (9:16) · Midjourney v6 / Flux.1\n'+prompt+pStyle+' --ar 9:16 --style raw --v 6\n\n'+
+        '[ExMe · Casa do Colecionador Moderno — pasta '+id+'/'+post.slug+']';
+      POSTS.push(post);
+    });
+  });
+})();
+
+/* ----------------------------- 3. MOTOR SVG ----------------------------- */
+const FEED={w:1080,h:1350}, STORY={w:1080,h:1920};
+let UID=0;
+const F_DISP="'Syne','Arial Black',sans-serif";
+const F_MONO="'JetBrains Mono','Courier New',monospace";
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function wrap(text,maxW,fs,mono){
+  const ratio=mono?0.60:0.60;
+  const chars=Math.max(5,Math.floor(maxW/(fs*ratio)));
+  const words=text.split(/\s+/);const lines=[];let cur='';
+  for(const w of words){const t=cur?cur+' '+w:w;
+    if(t.length>chars&&cur){lines.push(cur);cur=w;}else cur=t;}
+  if(cur)lines.push(cur);
+  return lines;
+}
+function txt(x,y,s,o={}){
+  const fs=o.fs||30,mono=o.mono,anchor=o.anchor||'start';
+  const lh=o.lh||fs*1.08,ls=o.ls||0;
+  const fam=mono?F_MONO:F_DISP,wt=o.wt||(mono?700:800);
+  const lines=Array.isArray(s)?s:wrap(s,o.maxW||900,fs,mono);
+  let out=`<text x="${x}" y="${y}" font-family="${fam}" font-weight="${wt}" font-size="${fs}" letter-spacing="${ls}" text-anchor="${anchor}" fill="${o.fill||'#F8FAFC'}" ${o.op!=null?`opacity="${o.op}"`:''}>`;
+  lines.forEach((ln,i)=>{const out_ln=o.upper?String(ln).toUpperCase():String(ln);
+    out+=`<tspan x="${x}" dy="${i===0?0:lh}">${esc(out_ln)}</tspan>`;});
+  return out+'</text>';
+}
+function barcode(x,y,w,h,seed){
+  let out=`<g>`;let bx=x;let i=0;
+  while(bx<x+w-4){const c=seed.charCodeAt(i%seed.length);
+    if(c%3!==0){const bw=2+(c%5);out+=`<rect x="${bx}" y="${y}" width="${bw}" height="${h}" fill="#0a0d10"/>`;}
+    bx+=2+(c%4)+2;i++;}
+  out+=`</g>`+txt(x+w/2,y+h+22,seed,{mono:true,fs:16,anchor:'middle',fill:'#0a0d10',ls:2});
+  return out;
+}
+function stamp(x,y,text,color,rot=0,sc=1){
+  const fs=26*sc,pad=16*sc,w=text.length*fs*.62+pad*2,h=fs+pad*1.6;
+  return `<g transform="translate(${x},${y}) rotate(${rot})">
+    <rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="6" fill="none" stroke="${color}" stroke-width="3"/>
+    <rect x="${-w/2+6*sc}" y="${-h/2+6*sc}" width="${w-12*sc}" height="${h-12*sc}" rx="3" fill="none" stroke="${color}" stroke-width="1.5" opacity=".7"/>
+    ${txt(0,fs*.36,text,{mono:true,fs,fill:color,anchor:'middle',ls:3})}</g>`;
+}
+function tape(x,y,w,rot=0,color='rgba(245,158,11,.75)'){
+  const h=44,seg=14;let top=`M0 ${h/2} `,bot=`L0 ${-h/2} `;
+  for(let i=0;i<=w;i+=seg){const yy=(i/seg%2?6:-6);top+=`L${i} ${h/2+yy} `;}
+  for(let i=w;i>=0;i-=seg){const yy=(i/seg%2?-6:6);bot+=`L${i} ${-h/2+yy} `;}
+  return `<g transform="translate(${x},${y}) rotate(${rot})"><path d="${top}${bot}Z" fill="${color}" opacity=".85"/>
+    <path d="M0 ${h/2-6} L${w} ${h/2-6} M0 ${-h/2+6} L${w} ${-h/2+6}" stroke="rgba(0,0,0,.15)" stroke-width="2" stroke-dasharray="6 8"/></g>`;
+}
+function star(x,y,r,fill,rot=0){
+  let p='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5;const rr=i%2?r*.45:r;
+    p+=(i?'L':'M')+(x+Math.cos(a)*rr)+' '+(y+Math.sin(a)*rr)+' ';}
+  return `<path d="${p}Z" fill="${fill}" transform="rotate(${rot} ${x} ${y})"/>`;
+}
+function imageTag(p,x,y,w,h,uid,desat=false){
+  const href=esc(p.imgData||p._img||p.imgURL);
+  return `<image href="${href}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice"
+    ${desat?`filter="url(#f${uid}-desat)"`:''} data-fb="1"/>`;
+}
+
+function defs(uid){
+  return `<defs>
+  <radialGradient id="g${uid}-paper" cx="50%" cy="26%" r="110%">
+    <stop offset="0%" stop-color="#1B2029"/><stop offset="60%" stop-color="#11141A"/><stop offset="100%" stop-color="#0D0F12"/>
+  </radialGradient>
+  <linearGradient id="g${uid}-holo" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#10E868"/><stop offset="22%" stop-color="#F59E0B"/><stop offset="45%" stop-color="#E2E8F0"/>
+    <stop offset="64%" stop-color="#7DD3FC"/><stop offset="82%" stop-color="#C084FC"/><stop offset="100%" stop-color="#10E868"/>
+  </linearGradient>
+  <linearGradient id="g${uid}-sheen" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="45%" stop-color="#fff" stop-opacity=".5"/>
+    <stop offset="55%" stop-color="#fff" stop-opacity=".15"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="g${uid}-fade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0D0F12" stop-opacity=".15"/><stop offset="55%" stop-color="#0D0F12" stop-opacity=".55"/>
+    <stop offset="100%" stop-color="#0D0F12" stop-opacity=".92"/>
+  </linearGradient>
+  <linearGradient id="g${uid}-green" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#0a9c46"/><stop offset="100%" stop-color="#10E868"/>
+  </linearGradient>
+  <pattern id="p${uid}-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M40 0H0V40" fill="none" stroke="#E2E8F0" stroke-width="1" opacity="0.5"/>
+  </pattern>
+  <pattern id="p${uid}-dots" width="22" height="22" patternUnits="userSpaceOnUse">
+    <circle cx="5" cy="5" r="2.6" fill="#F59E0B" opacity=".5"/>
+  </pattern>
+  <filter id="f${uid}-grain"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.5"/></feComponentTransfer></filter>
+  <filter id="f${uid}-desat"><feColorMatrix type="matrix" values="0.55 0.4 0.2 0 0.02  0.45 0.45 0.15 0 0.01  0.25 0.25 0.4 0 0  0 0 0 1 0"/>
+    <feComponentTransfer><feFuncR type="linear" slope="1.05"/><feFuncG type="linear" slope="1.02"/><feFuncB type="linear" slope="1.15"/></feComponentTransfer></filter>
+  <filter id="f${uid}-shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#000" flood-opacity=".55"/></filter>
+</defs>`;
+}
+function baseBg(uid){
+  return `<rect width="100%" height="100%" fill="url(#g${uid}-paper)"/>
+  <rect width="100%" height="100%" fill="url(#p${uid}-grid)" opacity=".06"/>
+  <rect width="100%" height="100%" filter="url(#f${uid}-grain)" opacity=".10"/>`;
+}
+function chrome(p,H,fmt,uid,light=false){
+  const tc=light?'#0a0d10':'#F8FAFC',sub=light?'rgba(10,13,16,.55)':'rgba(248,250,252,.5)';
+  const pc=PILLARS[p.pillar].cor;
+  return `
+  <g font-family="${F_MONO}">
+   <text x="64" y="66" font-size="20" font-weight="700" letter-spacing="4" fill="${tc}">EXME // ARQUIVO DO COLECIONADOR</text>
+   <text x="1016" y="66" font-size="20" font-weight="700" letter-spacing="2" fill="${sub}" text-anchor="end">${p.serial}</text>
+   <line x1="64" y1="88" x2="1016" y2="88" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
+   <line x1="64" y1="${H-92}" x2="1016" y2="${H-92}" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
+   <text x="64" y="${H-52}" font-size="19" font-weight="700" letter-spacing="3" fill="${pc}">${esc(PILLARS[p.pillar].nome.toUpperCase())}</text>
+   <text x="64" y="${H-26}" font-size="15" letter-spacing="3" fill="${sub}">ARQUÉTIPO ${p.arch} · ${esc(ARCHS[p.arch].curto)} — @EXME.CLUB</text>
+   <g transform="translate(828,${H-76})">${barcode(0,0,188,34,p.serial)}</g>
+  </g>`;
+}
+
+/* ---- A1 · VAULT ---- */
+function archVault(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  const cardX=130,cardW=820,cardY=story?430:330,pad=30;
+  const photoH=story?600:400,plateH=92,rowH=56;
+  const rows=[['POSIÇÃO',p.pos],['ÉPOCA','26/27'],['RARIDADE',p.raridade+'  ·  '+p.date]];
+  const cardH=pad+photoH+24+plateH+26+rows.length*rowH+(story?92:pad);
+  const photoY=cardY+pad,plateY=photoY+photoH+24,sy=plateY+plateH+30;
+  let s=baseBg(uid);
+  s+=txt(64,story?185:165,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
+  s+=txt(64,story?story?262:240:240,p.h,{fs:story?66:60,maxW:w-128,fill:'#F8FAFC',wt:800,lh:1.04});
+  /* card */
+  s+=`<g filter="url(#f${uid}-shadow)">
+   <rect x="${cardX-10}" y="${cardY-10}" width="${cardW+20}" height="${cardH+20}" rx="34" fill="url(#g${uid}-holo)"/>
+   <rect x="${cardX}" y="${cardY}" width="${cardW}" height="${cardH}" rx="26" fill="#F8FAFC"/>
+   <clipPath id="c${uid}-photo"><rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" rx="16"/></clipPath>
+   <g clip-path="url(#c${uid}-photo)">${imageTag(p,cardX+pad,photoY,cardW-pad*2,photoH,uid)}
+     <rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" fill="url(#g${uid}-fade)"/>
+     <rect class="holo-sheen" x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" fill="url(#g${uid}-sheen)"/></g>
+   <rect x="${cardX+pad}" y="${photoY}" width="${cardW-pad*2}" height="${photoH}" rx="16" fill="none" stroke="#0a0d10" stroke-width="2" opacity=".15"/>`;
+  /* name plate */
+  s+=`<rect x="${cardX+pad}" y="${plateY}" width="${cardW-pad*2}" height="${plateH}" rx="12" fill="#0D0F12"/>
+   ${txt(cardX+pad+28,plateY+plateH/2+8,p.t,{fs:40,fill:'#F8FAFC',maxW:cardW-300,wt:800})}
+   <rect x="${cardX+cardW-pad-150}" y="${plateY+18}" width="124" height="${plateH-36}" rx="8" fill="url(#g${uid}-holo)"/>
+   ${txt(cardX+cardW-pad-88,plateY+plateH/2+2,'FOIL',{mono:true,fs:22,fill:'#0a0d10',anchor:'middle',ls:4})}`;
+  /* stats */
+  rows.forEach((r,i)=>{const y=sy+i*rowH;
+    s+=txt(cardX+pad+4,y,r[0],{mono:true,fs:19,fill:'rgba(10,13,16,.5)',ls:2});
+    s+=txt(cardX+cardW-pad-4,y,r[1],{mono:true,fs:20,fill:'#0a0d10',anchor:'end',ls:1});
+    s+=`<line x1="${cardX+pad}" y1="${y+18}" x2="${cardX+cardW-pad}" y2="${y+18}" stroke="#0a0d10" stroke-opacity=".08"/>`;});
+  /* rarity pips + serial */
+  const py=sy+rows.length*rowH+4;
+  let pips='';for(let i=0;i<5;i++){pips+=`<rect x="${cardX+pad+4+i*34}" y="${py}" width="24" height="14" rx="3" fill="${i<p.rarN?'url(#g'+uid+'-holo)':'rgba(10,13,16,.12)'}"/>`;}
+  s+=pips+txt(cardX+cardW-pad-4,py+12,p.serial.replace(/·/g,' / '),{mono:true,fs:17,fill:'rgba(10,13,16,.55)',anchor:'end',ls:2});
+  s+=`</g>`;
+  s+=stamp(cardX+cardW-66,cardY+46,'RARO','#0a0d10',-12,1.1);
+  s+=stamp(cardX+96,cardY+cardH-34,'ARQUIVO EXME','rgba(10,13,16,.55)',5,.8);
+  /* corpo: dentro do cartão (story) ou faixa inferior (feed) */
+  if(story){
+    s+=txt(cardX+pad+4,sy+rows.length*rowH+58,p.b,{mono:true,fs:22,maxW:cardW-pad*2-8,fill:'rgba(10,13,16,.72)',wt:700,lh:1.5});
+  }else{
+    s+=txt(64,H-196,p.b,{mono:true,fs:20,maxW:w-128,fill:'rgba(248,250,252,.72)',wt:400,lh:1.5});
+  }
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+/* ---- A2 · SCRAPBOOK ---- */
+function archScrap(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  let s=`<rect width="100%" height="100%" fill="#171B22"/>
+  <rect width="100%" height="100%" fill="url(#p${uid}-dots)" opacity=".07"/>
+  <rect width="100%" height="100%" filter="url(#f${uid}-grain)" opacity=".14"/>`;
+  /* taped photo cutout */
+  const px=story?110:90,py=story?300:230,pw=story?860:560,ph=story?760:620;
+  s+=tape(px+pw/2-90,py-6,180,-4,'rgba(245,158,11,.8)');
+  s+=tape(px+pw/2-90,py+ph-14,170,3,'rgba(226,232,240,.55)');
+  s+=`<g transform="rotate(${story?-1.6:-2.4} ${px+pw/2} ${py+ph/2})" filter="url(#f${uid}-shadow)">
+    <rect x="${px-14}" y="${py-14}" width="${pw+28}" height="${ph+28}" fill="#F8FAFC"/>
+    <clipPath id="c${uid}-scrap"><rect x="${px}" y="${py}" width="${pw}" height="${ph}"/></clipPath>
+    <g clip-path="url(#c${uid}-scrap)">${imageTag(p,px,py,pw,ph,uid,true)}
+      <rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="#F59E0B" opacity=".10"/>
+      <rect class="holo-sheen" x="${px}" y="${py}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
+    ${txt(px+18,py+ph-22,p.date+' · '+p.note,{mono:true,fs:18,fill:'#0a0d10',ls:2})}
+  </g>`;
+  s+=stamp(px+pw-20,py+40,'REVELADO','#F59E0B',-8,1);
+  /* headline */
+  const hx=story?80:px+pw+50;
+  const hy=story?py+ph+90:py+40;
+  s+=txt(hx,story?hy:py-70,p.note,{mono:true,fs:21,fill:'#10E868',ls:4});
+  s+=txt(hx,story?hy+86:py+70,p.h,{fs:story?76:54,maxW:story?w-160:w-hx-80,fill:'#F8FAFC',wt:800,lh:1.0});
+  /* sticky note */
+  const nx=story?110:w-400,ny=story?hy+330:H-470;
+  s+=`<g transform="rotate(2 ${nx+190} ${ny+110})" filter="url(#f${uid}-shadow)">
+    <rect x="${nx}" y="${ny}" width="${story?w-220:340}" height="${story?250:230}" rx="4" fill="#F59E0B"/>
+    ${txt(nx+28,ny+56,p.b,{mono:true,fs:story?24:20,maxW:(story?w-280:290),fill:'#1a1204',wt:700,lh:1.5})}</g>`;
+  s+=tape(nx+120,ny-14,120,-6,'rgba(248,250,252,.5)');
+  /* footnote */
+  s+=txt(80,H-170,'* Nota de rodapé: o colecionador nunca deita nada fora. Arquiva.',{mono:true,fs:19,fill:'rgba(248,250,252,.55)',ls:1});
+  s+=star(w-140,story?200:300,46,'#10E868',18);
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+/* ---- A3 · FÓRUM 2000 ---- */
+function win(uid,x,y,w,h,title,body,rot=0,light=true){
+  return `<g transform="rotate(${rot} ${x+w/2} ${y+h/2})" filter="url(#f${uid}-shadow)">
+   <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${light?'#DDE3EC':'#11141A'}" stroke="${light?'#0a0d10':'#E2E8F0'}" stroke-width="3"/>
+   <rect x="${x}" y="${y}" width="${w}" height="58" rx="10" fill="#0a0d10"/>
+   <rect x="${x}" y="${y+40}" width="${w}" height="18" fill="#0a0d10"/>
+   <circle cx="${x+28}" cy="${y+29}" r="9" fill="#10E868"/><circle cx="${x+56}" cy="${y+29}" r="9" fill="#F59E0B"/><circle cx="${x+84}" cy="${y+29}" r="9" fill="#E2E8F0"/>
+   ${txt(x+w/2,y+37,title,{mono:true,fs:18,fill:'#7DD3FC',anchor:'middle',ls:2})}
+   ${body}
+  </g>`;
+}
+function archForum(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  let s=baseBg(uid);
+  s+=txt(64,168,'LIGAÇÃO DISCADA DETETADA · BEM-VINDO DE VOLTA',{mono:true,fs:20,fill:'#10E868',ls:3});
+  s+=txt(64,story?250:236,p.h,{fs:story?60:52,maxW:w-128,fill:'#F8FAFC',wt:800,lh:1.04});
+  const mkThread=(x,y,ww,hh)=>{
+    let b='';let cy=y+104;
+    b+=`<rect x="${x+26}" y="${y+86}" width="${ww-52}" height="${hh-116}" fill="#F8FAFC" stroke="#0a0d10" stroke-width="2"/>`;
+    for(let i=0;i<(story?7:5);i++){
+      const u=FORUM_USERS[(p.id+i)%FORUM_USERS.length];
+      b+=txt(x+48,cy,'['+u+']',{mono:true,fs:17,fill:'#0a7a3c',ls:1});
+      const msg=i===1?('*** '+p.t.toUpperCase()+' — '+p.b.substring(0,Math.floor(p.b.length*.55)).toUpperCase()+' ***')
+        :['alguém tem o nr 247? troco já','[vendo] lote 40 repetidos, estado mint','saqueta de sexta: saiu-me BRILHANTE','encontro no balneário, depois do duche','boas! novo aqui, sou de Braga','up nesta troca, urgente'][i%6];
+      b+=txt(x+150,cy,msg,{mono:true,fs:16,fill:'#0a0d10',maxW:ww-200,wt:400,lh:1.4});
+      cy+=story?78:66;
+      b+=`<line x1="${x+48}" y1="${cy-26}" x2="${x+ww-48}" y2="${cy-26}" stroke="#0a0d10" stroke-opacity=".12"/>`;
+    }
+    b+=`<rect x="${x+26}" y="${y+hh-64}" width="${ww-52}" height="40" fill="#0a0d10"/>`;
+    b+=txt(x+ww/2,y+hh-37,'[ RESPONDER ]   [ TROCAR JÁ ]   [ ADICIONAR AOS FAVORITOS ]',{mono:true,fs:15,fill:'#10E868',anchor:'middle',ls:1});
+    return b;
+  };
+  if(story){
+    s+=win(uid,70,330,940,720,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(70,330,940,720),-1.2);
+    s+=win(uid,110,1110,860,560,'MENSAGEM_PRIVADA — gatilho_foil',
+      txt(140,1220,'"tenho o 247. encontro no portão ás 16h. não contes ao admin."',{mono:true,fs:21,fill:'#F59E0B',maxW:800,wt:700,lh:1.5})+
+      txt(140,1420,'estado: ONLINE · 412 utilizadores ligados',{mono:true,fs:18,fill:'#10E868'}),1.4,false);
+  }else{
+    s+=win(uid,60,320,760,820,'EXME_FORUM.EXE — TROCAS DE CROMOS',mkThread(60,320,760,820),-1.4);
+    s+=win(uid,360,560,660,420,'MENSAGEM_PRIVADA',
+      txt(392,668,'"tenho o 247. encontro no portão."',{mono:true,fs:19,fill:'#F59E0B',maxW:600,wt:700,lh:1.5})+
+      txt(392,780,'ONLINE · 412 users',{mono:true,fs:16,fill:'#10E868'}),1.8,false);
+  }
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+/* ---- A4 · MANIFESTO ---- */
+function archManifesto(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  const fs=story?104:92;
+  const lines=wrap(p.h,w-140,fs,false);
+  let s=`${imageTag(p,0,0,w,H,uid,true)}
+  <rect width="100%" height="100%" fill="#0D0F12" opacity=".68"/>
+  <rect width="100%" height="100%" filter="url(#f${uid}-grain)" opacity=".16"/>`;
+  s+=txt(64,300,'“',{fs:240,fill:'#10E868',wt:800,op:.28});
+  const startY=story?H*.34:H*.3;
+  lines.forEach((ln,i)=>{
+    const y=startY+i*fs*1.02;
+    s+=txt(72,y,ln,{fs,fill:'#F8FAFC',wt:800,maxW:w-140,lh:1.02});
+    s+=`<rect x="76" y="${y+26}" width="${Math.min(w-160,ln.length*fs*.56)}" height="10" fill="#10E868" opacity=".85"/>`;
+  });
+  s+=txt(72,startY+lines.length*fs*1.02+80,p.b,{mono:true,fs:story?27:24,maxW:w-160,fill:'rgba(248,250,252,.78)',lh:1.6});
+  s+=stamp(w-190,200,story?'ARQUIVO':'MANIFESTO','#F59E0B',8,1.1);
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+/* ---- A5 · RELÍQUIA (SPLIT EVIDENCE) ---- */
+function archReliquia(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  let s=baseBg(uid);
+  if(story){
+    const ph=H*.5;
+    s+=`<clipPath id="c${uid}-rel"><rect x="0" y="96" width="${w}" height="${ph-96}"/></clipPath>
+    <g clip-path="url(#c${uid}-rel)">${imageTag(p,0,96,w,ph-96,uid,true)}
+      <rect x="0" y="96" width="${w}" height="${ph-96}" fill="#F59E0B" opacity=".12"/>
+      <rect width="${w}" height="${ph}" fill="url(#g${uid}-fade)"/></g>
+    <rect x="40" y="130" width="${w-80}" height="${ph-170}" fill="none" stroke="#F8FAFC" stroke-width="3" opacity=".8"/>`;
+    s+=stamp(w-200,ph-60,'REGISTO '+p.date.substring(p.date.length-4),'#F8FAFC',-6,1);
+    const ty=ph+80;
+    s+=txt(72,ty,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
+    s+=txt(72,ty+86,p.h,{fs:64,maxW:w-144,fill:'#F8FAFC',wt:800,lh:1.02});
+    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','CAMPO DA FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO PELO TEMPO'],['Nº SÉRIE',p.serial],['CATÁLOGO','PÁG. '+p.id+' / 060']];
+    rows.forEach((r,i)=>{const y=ty+250+i*72;
+      s+=txt(72,y,r[0],{mono:true,fs:19,fill:'rgba(248,250,252,.45)',ls:3});
+      s+=txt(w-72,y,r[1],{mono:true,fs:21,fill:'#E2E8F0',anchor:'end'});
+      s+=`<line x1="72" y1="${y+20}" x2="${w-72}" y2="${y+20}" stroke="#E2E8F0" stroke-opacity=".18"/>`;});
+  }else{
+    const pw=580;
+    s+=`<clipPath id="c${uid}-rel"><rect x="0" y="96" width="${pw}" height="${H-192}"/></clipPath>
+    <g clip-path="url(#c${uid}-rel)">${imageTag(p,0,96,pw,H-192,uid,true)}
+      <rect x="0" y="96" width="${pw}" height="${H-192}" fill="#F59E0B" opacity=".12"/>
+      <rect width="${pw}" height="${H}" fill="url(#g${uid}-fade)"/></g>
+    <rect x="36" y="130" width="${pw-72}" height="${H-260}" fill="none" stroke="#F8FAFC" stroke-width="3" opacity=".8"/>`;
+    s+=stamp(pw-150,H-260,p.date.substring(p.date.length-4),'#F8FAFC',-6,1);
+    const x=pw+64;
+    s+=txt(x,250,p.note,{mono:true,fs:21,fill:'#10E868',ls:4});
+    s+=txt(x,340,p.h,{fs:52,maxW:w-x-64,fill:'#F8FAFC',wt:800,lh:1.04});
+    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO'],['SÉRIE',p.serial],['CATÁLOGO',p.id+'/060']];
+    rows.forEach((r,i)=>{const y=620+i*88;
+      s+=txt(x,y,r[0],{mono:true,fs:18,fill:'rgba(248,250,252,.45)',ls:3});
+      s+=txt(w-64,y,r[1],{mono:true,fs:20,fill:'#E2E8F0',anchor:'end'});
+      s+=`<line x1="${x}" y1="${y+22}" x2="${w-64}" y2="${y+22}" stroke="#E2E8F0" stroke-opacity=".18"/>`;});
+    s+=star(w-130,180,40,'#F59E0B',14);
+  }
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+/* ---- A6 · RITUAL 3 LÂMINAS ---- */
+function archRitual(p,d,uid){
+  const{w,h:H}=d;const story=H>1500;
+  const steps=p.steps||['RASGAR','REVELAR','GUARDAR'];
+  const descs=['O gesto ensaiado mil vezes.','O segundo que não volta.','O início da próxima busca.'];
+  let s=baseBg(uid);
+  s+=txt(w/2,170,p.note,{mono:true,fs:21,fill:'#10E868',anchor:'middle',ls:5});
+  s+=txt(w/2,226,p.h,{fs:story?44:40,maxW:w-160,fill:'#F8FAFC',anchor:'middle',wt:800});
+  if(story){
+    const ph=440,gap=30,y0=300;
+    steps.forEach((st,i)=>{
+      const y=y0+i*(ph+gap);
+      s+=`<g filter="url(#f${uid}-shadow)">
+        <clipPath id="c${uid}-r${i}"><rect x="70" y="${y}" width="${w-140}" height="${ph}" rx="18"/></clipPath>
+        <g clip-path="url(#c${uid}-r${i})">
+          ${imageTag(p,70,y,w-140,ph,uid)}
+          <rect x="70" y="${y}" width="${w-140}" height="${ph}" fill="#0D0F12" opacity=".45"/>
+          <rect class="holo-sheen" x="70" y="${y}" width="${w-140}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
+        <rect x="70" y="${y}" width="${w-140}" height="${ph}" rx="18" fill="none" stroke="url(#g${uid}-holo)" stroke-width="3"/>
+        ${txt(110,y+92,'0'+(i+1),{fs:64,fill:'#10E868',wt:800})}
+        ${txt(110,y+180,st,{fs:58,fill:'#F8FAFC',wt:800})}
+        ${txt(110,y+240,descs[i],{mono:true,fs:21,fill:'rgba(248,250,252,.75)',maxW:w-220,wt:400})}
+        ${i<2?`<path d="M${w/2-16} ${y+ph+2} L${w/2+16} ${y+ph+2} M${w/2} ${y+ph-6} L${w/2} ${y+ph+gap-12} M${w/2-12} ${y+ph+gap-20} L${w/2} ${y+ph+gap-8} L${w/2+12} ${y+ph+gap-20}" stroke="#10E868" stroke-width="4" fill="none" stroke-linecap="round"/>`:''}
+      </g>`;
+    });
+  }else{
+    const gap=14,pw=(w-72*2-gap*2)/3,y=300,ph=H-300-260;
+    steps.forEach((st,i)=>{
+      const x=72+i*(pw+gap);
+      s+=`<g filter="url(#f${uid}-shadow)">
+        <clipPath id="c${uid}-r${i}"><rect x="${x}" y="${y}" width="${pw}" height="${ph}" rx="16"/></clipPath>
+        <g clip-path="url(#c${uid}-r${i})">
+          ${imageTag(p,x,y,pw,ph,uid)}
+          <rect x="${x}" y="${y}" width="${pw}" height="${ph}" fill="url(#g${uid}-fade)"/>
+          <rect class="holo-sheen" x="${x}" y="${y}" width="${pw}" height="${ph}" fill="url(#g${uid}-sheen)"/></g>
+        <rect x="${x}" y="${y}" width="${pw}" height="${ph}" rx="16" fill="none" stroke="url(#g${uid}-holo)" stroke-width="3"/>
+        ${txt(x+pw/2,y+ph-120,'0'+(i+1),{fs:72,fill:'#10E868',anchor:'middle',wt:800})}
+        ${txt(x+pw/2,y+ph-58,st,{fs:40,fill:'#F8FAFC',anchor:'middle',wt:800})}
+        ${i<2?`<path d="M${x+pw+2} ${y+ph/2-14} l10 14 l-10 14" stroke="#F59E0B" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}
+      </g>`;
+    });
+    s+=txt(w/2,H-200,p.b,{mono:true,fs:22,maxW:w-200,anchor:'middle',fill:'rgba(248,250,252,.72)',lh:1.6});
+  }
+  s+=chrome(p,H,'feed',uid);
+  return s;
+}
+
+const RENDERERS={1:archVault,2:archScrap,3:archForum,4:archManifesto,5:archReliquia,6:archRitual};
+
+function buildSVG(p,fmt){
+  const dim=fmt==='story'?STORY:FEED;
+  const uid='x'+(++UID)+'p'+p.id+fmt;
+  let inner=RENDERERS[p.arch](p,dim,uid);
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+   width="${dim.w}" height="${dim.h}" viewBox="0 0 ${dim.w} ${dim.h}">${defs(uid)}${inner}</svg>`;
+}
+
+/* ----------------------------- 4. IMAGENS & FONTES (EXPORT) ----------------------------- */
+function fetchAsDataURL(url,maxW=1200){
+  return new Promise((resolve,reject)=>{
+    const im=new Image();im.crossOrigin='anonymous';
+    im.onload=()=>{
+      const sc=Math.min(1,maxW/im.naturalWidth);
+      const c=document.createElement('canvas');
+      c.width=Math.round(im.naturalWidth*sc);c.height=Math.round(im.naturalHeight*sc);
+      const x=c.getContext('2d');x.drawImage(im,0,0,c.width,c.height);
+      try{resolve(c.toDataURL('image/jpeg',.85));}catch(e){reject(e);}
+    };
+    im.onerror=()=>reject(new Error('img fail'));
+    im.src=url;
+  });
+}
+async function resolveImage(p){
+  if(p.imgData)return p.imgData;
+  if(p._img)return p._img;
+  try{p._img=await fetchAsDataURL(p.imgURL);}
+  catch(e){try{p._img=await fetchAsDataURL(p.imgFallback);}catch(e2){p._img=p.placeholder;}}
+  return p._img;
+}
+let fontCache=null;
+async function fontStyle(){
+  if(fontCache!==null)return fontCache;
+  fontCache='';
+  try{
+    const css=await fetch('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap').then(r=>r.text());
+    const blocks=css.match(/@font-face\s*{[^}]+}/g)||[];
+    let out='<style>';
+    for(const b of blocks){
+      const fam=(b.match(/font-family:\s*'([^']+)'/)||[])[1];
+      const wt=(b.match(/font-weight:\s*(\d+)/)||[])[1]||'400';
+      const url=(b.match(/url\((https:[^)]+\.woff2)\)/)||[])[1];
+      if(!fam||!url)continue;
+      const buf=await fetch(url).then(r=>r.blob());
+      const b64=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.readAsDataURL(buf);});
+      out+=`@font-face{font-family:'${fam}';font-weight:${wt};font-style:normal;src:url(${b64}) format('woff2');}`;
+    }
+    out+='</style>';fontCache=out;
+  }catch(e){fontCache='';}
+  return fontCache;
+}
+async function buildSVGAsync(p,fmt){
+  await resolveImage(p);
+  const fonts=await fontStyle();
+  return buildSVG(p,fmt).replace('><defs','>'+fonts+'<defs');
+}
+function svgToBlob(svgStr){return new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});}
+function pngBlob(svgStr,scale=2){
+  return new Promise((resolve,reject)=>{
+    const w=parseInt(svgStr.match(/width="(\d+)"/)[1]),h=parseInt(svgStr.match(/height="(\d+)"/)[1]);
+    const url=URL.createObjectURL(svgToBlob(svgStr));
+    const im=new Image();
+    im.onload=()=>{
+      const c=document.createElement('canvas');c.width=w*scale;c.height=h*scale;
+      const x=c.getContext('2d');x.fillStyle='#0D0F12';x.fillRect(0,0,c.width,c.height);
+      x.drawImage(im,0,0,c.width,c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(b=>b?resolve(b):reject(new Error('png')),'image/png');
+    };
+    im.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('svg render'));};
+    im.src=url;
+  });
+}
+
+/* ----------------------------- 5. MINI-ZIP (fallback STORED) ----------------------------- */
+const MiniZip=(()=>{
+  const table=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+  const crc=b=>{let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=table[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;};
+  function u16(v,a){a.push(v&255,(v>>8)&255);}
+  function u32(v,a){a.push(v&255,(v>>8)&255,(v>>16)&255,(v>>24)&255);}
+  function make(){
+    const entries=[];
+    function add(name,bytes){entries.push({name,bytes});}
+    const api={
+      folder:(p)=>{
+        const prefix=p?p.replace(/\/?$/,'/'):'';
+        return{file:(n,d)=>add(prefix+n,d),folder:(q)=>api.folder(prefix+q)};
+      },
+      file:(n,d)=>add(n,d),
+      generateAsync:async()=>{
+        const chunks=[];const central=[];let offset=0;
+        const enc=new TextEncoder();
+        for(const e of entries){
+          const nameB=enc.encode(e.name);
+          const data=typeof e.bytes==='string'?enc.encode(e.bytes):new Uint8Array(e.bytes);
+          const c=crc(data);
+          const local=[];u32(0x04034b50,local);u16(20,local);u16(0,local);u16(0,local);
+          u16(0,local);u16(0,local);u32(c,local);u32(data.length,local);u32(data.length,local);
+          u16(nameB.length,local);u16(0,local);
+          const lb=new Uint8Array(local),nb=new Uint8Array(nameB);
+          chunks.push(lb,nb,data);
+          const cen=[];u32(0x02014b50,cen);u16(20,cen);u16(20,cen);u16(0,cen);u16(0,cen);
+          u16(0,cen);u16(0,cen);u32(c,cen);u32(data.length,cen);u32(data.length,cen);
+          u16(nameB.length,cen);u16(0,cen);u16(0,cen);u16(0,cen);u16(0,cen);u32(0,cen);u32(offset,cen);
+          central.push(new Uint8Array(cen),nb);
+          offset+=lb.length+nb.length+data.length;
+        }
+        let cenSize=0;central.forEach(c=>cenSize+=c.length);
+        const end=[];u32(0x06054b50,end);u16(0,end);u16(0,end);u16(entries.length,end);
+        u16(entries.length,end);u32(cenSize,end);u32(offset,end);u16(0,end);
+        chunks.push(...central,new Uint8Array(end));
+        return new Blob(chunks,{type:'application/zip'});
+      }
+    };
+    return api;
+  }
+  return{make};
+})();
+function newZip(){return (window.JSZip?new JSZip():MiniZip.make());}
+function saveBlob(blob,name){if(window.saveAs)return saveAs(blob,name);
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000);}
+
+/* ----------------------------- 6. PACOTES DE UM POST / PILAR / MASTER ----------------------------- */
+function setProg(pct,label,title){
+  document.getElementById('progress').classList.add('open');
+  document.getElementById('progBar').style.width=pct+'%';
+  if(label)document.getElementById('progLabel').textContent=label;
+  if(title)document.getElementById('progTitle').textContent=title;
+}
+function hideProg(){document.getElementById('progress').classList.remove('open');}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function addPostToZip(zip,p,idx,total,labelPrefix){
+  setProg(Math.round(idx/total*100),(labelPrefix||'A empacotar')+' · cromo '+p.id+'/060 — '+p.t);
+  const f=zip.folder('EXME-'+p.id+'-'+p.slug);
+  const [svgFeed,svgStory]=await Promise.all([buildSVGAsync(p,'feed'),buildSVGAsync(p,'story')]);
+  const [pngFeed,pngStory]=await Promise.all([pngBlob(svgFeed,2),pngBlob(svgStory,2)]);
+  f.file('feed.png',pngFeed);f.file('feed.svg',svgFeed);
+  f.file('story.png',pngStory);f.file('story.svg',svgStory);
+  f.file('legenda.txt',p.caption);f.file('image_prompt.txt',p.promptTxt);
+  await sleep(4);
+}
+async function zipSingle(p){
+  setProg(0,'A preparar '+p.t+'…','Download individual');
+  const zip=newZip();
+  await addPostToZip(zip,p,1,1,'A empacotar');
+  const blob=await zip.generateAsync({type:'blob'});
+  saveBlob(blob,'EXME-'+p.id+'-'+p.slug+'.zip');
+  hideProg();toast('Pasta ZIP descarregada');
+}
+async function zipPillar(pk){
+  const list=POSTS.filter(p=>p.pillar===pk);
+  setProg(0,'','ZIP do pilar · '+PILLARS[pk].nome);
+  const zip=newZip();
+  for(let i=0;i<list.length;i++){await addPostToZip(zip,list[i],i,list.length,'Pilar: '+PILLARS[pk].nome);}
+  const blob=await zip.generateAsync({type:'blob'});
+  saveBlob(blob,'EXME_Pilar_'+slug(PILLARS[pk].nome)+'.zip');
+  hideProg();toast('ZIP do pilar descarregado ('+list.length+' posts)');
+}
+async function zipMaster(){
+  setProg(0,'','ZIP master · arquivo completo');
+  const zip=newZip();
+  for(let i=0;i<POSTS.length;i++){await addPostToZip(zip,POSTS[i],i,POSTS.length,'Master ZIP');}
+  const blob=await zip.generateAsync({type:'blob'});
+  saveBlob(blob,'EXME_Arquivo_60_Posts.zip');
+  hideProg();toast('Arquivo completo descarregado — 60 pastas');
+}
+async function quickPNG(p,fmt){
+  setProg(0,'A renderizar '+fmt+' 2×…','PNG HD');
+  const svg=await buildSVGAsync(p,fmt);
+  const blob=await pngBlob(svg,2);
+  saveBlob(blob,'EXME-'+p.id+'-'+p.slug+'-'+fmt+'-2x.png');
+  hideProg();toast('PNG 2× pronto');
+}
+async function quickSVG(p,fmt){
+  setProg(0,'A vetorizar…','SVG semântico');
+  const svg=await buildSVGAsync(p,fmt);
+  saveBlob(svgToBlob(svg),'EXME-'+p.id+'-'+p.slug+'-'+fmt+'.svg');
+  hideProg();toast('SVG pronto para Illustrator');
+}
+
+/* ----------------------------- 7. UI: GRID, FILTROS, TILT, DROP ----------------------------- */
+const state={fmt:'feed',pillar:'all',arch:0,search:''};
+let modalPost=null,modalFmt='feed';
+
+function cardHTML(p){
+  const pc=PILLARS[p.pillar].cor;
+  return `<article class="card-tilt" data-id="${p.id}">
+    <div class="card">
+      <div class="card-art" data-drop="${p.id}">
+        <div class="card-badge"><span class="dot" style="background:${pc}"></span>${p.id} · ${ARCHS[p.arch].curto}</div>
+        <div class="pillar-tag" style="background:${pc}">${PILLARS[p.pillar].nome.split(' ')[0]}</div>
+        <div class="card-svg" data-svg="${p.id}"></div>
+        <div class="card-glare"></div>
+        <div class="card-drop-hint"><i data-lucide="image-plus"></i><br>larga a imagem<br>para trocar a mídia</div>
+      </div>
+      <div class="card-meta">
+        <div>
+          <div class="t">${p.t}</div>
+          <div class="s">${p.note} · ${p.date}</div>
+        </div>
+        <div class="card-actions">
+          <button class="icon-btn" data-act="open" title="Abrir"><i data-lucide="maximize-2"></i></button>
+          <button class="icon-btn" data-act="img" title="Trocar imagem"><i data-lucide="image"></i></button>
+          <button class="icon-btn" data-act="png" title="PNG 2×"><i data-lucide="file-image"></i></button>
+          <button class="icon-btn" data-act="svg" title="SVG"><i data-lucide="file-code"></i></button>
+          <button class="icon-btn" data-act="zip" title="Pasta ZIP"><i data-lucide="package"></i></button>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+function filtered(){
+  const q=state.search.toLowerCase();
+  return POSTS.filter(p=>(state.pillar==='all'||p.pillar===state.pillar)
+    &&(!state.arch||p.arch===state.arch)
+    &&(!q||(p.t+' '+p.h+' '+p.b).toLowerCase().includes(q)));
+}
+function renderCardSVG(p){
+  const host=document.querySelector('[data-svg="'+p.id+'"]');
+  if(!host)return;
+  host.innerHTML=buildSVG(p,state.fmt);
+  host.querySelectorAll('image[data-fb]').forEach(im=>{
+    let tried=false;
+    im.addEventListener('error',()=>{
+      if(!tried){tried=true;im.setAttribute('href',p.imgFallback);}
+      else im.setAttribute('href',p.placeholder);
+    });
+  });
+}
+function render(){
+  const list=filtered();
+  const grid=document.getElementById('grid');
+  grid.innerHTML=list.length?list.map(cardHTML).join(''):'<div class="empty">Nenhum cromo encontrado no arquivo.</div>';
+  list.forEach(renderCardSVG);
+  if(window.lucide)lucide.createIcons();
+  wireCards(list);
+}
+function wireCards(list){
+  document.querySelectorAll('.card-tilt').forEach(cardEl=>{
+    const id=cardEl.dataset.id;const p=POSTS.find(x=>x.id===id);
+    const card=cardEl.querySelector('.card');
+    const art=cardEl.querySelector('.card-art');
+    /* tilt 3D */
+    cardEl.addEventListener('mousemove',e=>{
+      const r=cardEl.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+      card.style.transform=`rotateY(${(px-.5)*14}deg) rotateX(${(0.5-py)*12}deg) translateZ(0)`;
+      const glare=card.querySelector('.card-glare');
+      glare.style.setProperty('--mx',(px*100)+'%');glare.style.setProperty('--my',(py*100)+'%');
+    });
+    cardEl.addEventListener('mouseleave',()=>{card.style.transform='rotateY(0) rotateX(0)';});
+    /* drag & drop */
+    art.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('dragover');});
+    art.addEventListener('dragleave',()=>card.classList.remove('dragover'));
+    art.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('dragover');
+      const f=e.dataTransfer.files[0];if(f)handleFile(p,f);});
+    /* buttons */
+    cardEl.querySelectorAll('[data-act]').forEach(b=>{
+      b.addEventListener('click',()=>{
+        const act=b.dataset.act;
+        if(act==='open')openModal(p);
+        else if(act==='zip')zipSingle(p);
+        else if(act==='png')quickPNG(p,state.fmt);
+        else if(act==='svg')quickSVG(p,state.fmt);
+        else if(act==='img')pickFile(p);
+      });
+    });
+  });
+}
+function pickFile(p){
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  inp.onchange=()=>{if(inp.files[0])handleFile(p,inp.files[0]);};
+  inp.click();
+}
+function handleFile(p,file){
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{
+      const max=1400,sc=Math.min(1,max/Math.max(im.width,im.height));
+      const c=document.createElement('canvas');
+      c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      p.imgData=c.toDataURL('image/jpeg',.88);p._img=p.imgData;
+      renderCardSVG(p);
+      if(modalPost&&modalPost.id===p.id)renderModalArt();
+      toast('Mídia substituída · '+p.t);
+    };
+    im.src=fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* ---- chips ---- */
+function buildChips(){
+  const pc=document.getElementById('pillarChips');
+  pc.innerHTML='<button class="chip active" data-pk="all">TODOS</button>'+
+    Object.entries(PILLARS).map(([k,v])=>`<button class="chip" data-pk="${k}"><span class="dot" style="background:${v.cor}"></span>${v.nome.split(' ')[0]} · ${v.count}</button>`).join('');
+  pc.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+    pc.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');state.pillar=c.dataset.pk;render();
+  });
+  const ac=document.getElementById('archChips');
+  ac.innerHTML='<button class="chip active" data-ak="0">ARQUÉTIPOS</button>'+
+    Object.entries(ARCHS).map(([k,v])=>`<button class="chip" data-ak="${k}">${v.curto}</button>`).join('');
+  ac.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+    ac.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');state.arch=+c.dataset.ak;render();
+  });
+}
+
+/* ---- modal ---- */
+function openModal(p){
+  modalPost=p;modalFmt=state.fmt;
+  document.getElementById('modal').classList.add('open');
+  document.querySelectorAll('#modalFmtSeg button').forEach(b=>b.classList.toggle('active',b.dataset.fmt===modalFmt));
+  document.getElementById('modalKicker').textContent='ARQUIVO '+p.id+' · '+PILLARS[p.pillar].nome.toUpperCase()+' · '+ARCHS[p.arch].curto;
+  document.getElementById('modalTitle').textContent=p.t;
+  document.getElementById('modalCaption').value=p.caption;
+  document.getElementById('modalPrompt').value=p.promptTxt;
+  renderModalArt();
+  if(window.lucide)lucide.createIcons();
+}
+function renderModalArt(){document.getElementById('modalArt').innerHTML=buildSVG(modalPost,modalFmt);}
+function closeModal(){document.getElementById('modal').classList.remove('open');modalPost=null;}
+function wireModal(){
+  document.getElementById('modal').addEventListener('click',e=>{if(e.target.hasAttribute('data-close'))closeModal();});
+  document.querySelectorAll('#modalFmtSeg button').forEach(b=>b.onclick=()=>{
+    modalFmt=b.dataset.fmt;
+    document.querySelectorAll('#modalFmtSeg button').forEach(x=>x.classList.toggle('active',x===b));
+    renderModalArt();
+  });
+  const dz=document.getElementById('modalDrop');
+  dz.onclick=()=>modalPost&&pickFile(modalPost);
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');
+    if(modalPost&&e.dataTransfer.files[0])handleFile(modalPost,e.dataTransfer.files[0]);});
+  document.querySelectorAll('#modal [data-exp]').forEach(b=>b.onclick=()=>{
+    if(!modalPost)return;const a=b.dataset.exp;
+    if(a==='zip')zipSingle(modalPost);
+    else if(a==='png-feed')quickPNG(modalPost,'feed');
+    else if(a==='png-story')quickPNG(modalPost,'story');
+    else if(a==='svg-feed')quickSVG(modalPost,'feed');
+    else if(a==='svg-story')quickSVG(modalPost,'story');
+  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+}
+
+/* ---- toolbar ---- */
+function wireToolbar(){
+  document.querySelectorAll('#fmtSeg button').forEach(b=>b.onclick=()=>{
+    state.fmt=b.dataset.fmt;
+    document.querySelectorAll('#fmtSeg button').forEach(x=>x.classList.toggle('active',x===b));
+    POSTS.forEach(renderCardSVG);
+  });
+  document.getElementById('search').addEventListener('input',e=>{state.search=e.target.value;render();});
+  document.getElementById('masterZipBtn').onclick=zipMaster;
+  document.getElementById('pillarZipBtn').onclick=()=>{
+    if(state.pillar==='all'){toast('Seleciona um pilar nos filtros primeiro');return;}
+    zipPillar(state.pillar);
+  };
+}
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ----------------------------- 8. FUNDO: THREE.JS (ou fallback 2D) ----------------------------- */
+function initBg(){
+  const cv=document.getElementById('bg');
+  if(window.THREE){
+    try{
+      const renderer=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
+      renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+      const scene=new THREE.Scene();
+      const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,1,100);camera.position.z=40;
+      const N=650,pos=new Float32Array(N*3),col=new Float32Array(N*3);
+      const palette=[new THREE.Color('#10E868'),new THREE.Color('#F59E0B'),new THREE.Color('#E2E8F0'),new THREE.Color('#7DD3FC')];
+      for(let i=0;i<N;i++){
+        pos[i*3]=(Math.random()-.5)*90;pos[i*3+1]=(Math.random()-.5)*55;pos[i*3+2]=(Math.random()-.5)*60-10;
+        const c=palette[Math.floor(Math.random()*palette.length)];
+        col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+      }
+      const geo=new THREE.BufferGeometry();
+      geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+      geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+      const sp=document.createElement('canvas');sp.width=sp.height=64;
+      const sx=sp.getContext('2d');const g=sx.createRadialGradient(32,32,0,32,32,32);
+      g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.4,'rgba(255,255,255,.6)');g.addColorStop(1,'rgba(255,255,255,0)');
+      sx.fillStyle=g;sx.fillRect(0,0,64,64);
+      const tex=new THREE.CanvasTexture(sp);
+      const mat=new THREE.PointsMaterial({size:1.1,map:tex,vertexColors:true,transparent:true,opacity:.55,
+        blending:THREE.AdditiveBlending,depthWrite:false});
+      const points=new THREE.Points(geo,mat);scene.add(points);
+      let mx=0,my=0;
+      addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5;});
+      function resize(){renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();}
+      addEventListener('resize',resize);resize();
+      (function loop(t){
+        requestAnimationFrame(loop);
+        points.rotation.y=t*0.00002+mx*.15;points.rotation.x=my*.1;
+        camera.position.x+=(mx*6-camera.position.x)*.03;camera.position.y+=(-my*4-camera.position.y)*.03;
+        camera.lookAt(scene.position);
+        renderer.render(scene,camera);
+      })(0);
+      return;
+    }catch(e){/* fallback 2D */}
+  }
+  /* fallback: poeira 2D */
+  const ctx=cv.getContext('2d');let W,H;
+  const parts=Array.from({length:220},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.8+.4,
+    s:Math.random()*.18+.04,c:['#10E868','#F59E0B','#E2E8F0'][Math.floor(Math.random()*3)],o:Math.random()*.5+.15}));
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;}
+  addEventListener('resize',resize);resize();
+  let mx=0,my=0;addEventListener('mousemove',e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight;});
+  (function loop(){
+    requestAnimationFrame(loop);
+    ctx.clearRect(0,0,W,H);
+    for(const p of parts){
+      p.y-=p.s/W*60;if(p.y<0){p.y=1;p.x=Math.random();}
+      const x=p.x*W+(mx-.5)*30*p.r,y=p.y*H+(my-.5)*20*p.r;
+      ctx.globalAlpha=p.o;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(x,y,p.r,0,7);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  })();
+}
+
+/* ----------------------------- 9. ARRANQUE ----------------------------- */
+buildChips();wireToolbar();wireModal();render();initBg();
+</script>
+</body>
+</html>
