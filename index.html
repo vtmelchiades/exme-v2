@@ -153,7 +153,7 @@ main{position:relative;z-index:10;max-width:1480px;margin:0 auto;padding:34px 40
       </div>
     </div>
     <div class="brand-meta">
-      Coleção <b>Nº 001–060</b><br>
+      Coleção <b>Nº 001–100</b> · SÉRIE A + B MIRABOLANTE<br>
       Feed 1080×1350 · Story 1080×1920<br>
       6 Pilares · 6 Arquétipos · PT-PT
     </div>
@@ -170,7 +170,7 @@ main{position:relative;z-index:10;max-width:1480px;margin:0 auto;padding:34px 40
     <div class="chips" id="archChips"></div>
     <input class="search" id="search" placeholder="procurar na coleção…">
     <button class="btn btn-green" id="pillarZipBtn"><i data-lucide="package"></i>ZIP do pilar</button>
-    <button class="btn btn-gold" id="masterZipBtn"><i data-lucide="boxes"></i>ZIP master · 60</button>
+    <button class="btn btn-gold" id="masterZipBtn"><i data-lucide="boxes"></i>ZIP master · 100</button>
   </div>
 </div>
 
@@ -409,6 +409,101 @@ produto:[
   'a holographic floating digital archive of duplicate stickers cards orbiting a smartphone over a dark desk, gold and green glow, premium product commercial photography, cinematic dark background, 35mm film grain, futuristic nostalgic',1]
 ]};
 
+/* ====================== SÉRIE B · IDEIAS MIRABOLANTES (+40) ====================== */
+const SEEDS_EXTRA = {
+nostalgia:[
+ ['A Máquina do Tempo','E se pudesses voltar a 1998 por uma hora?','Uma hora apenas. Um quiosque, cem escudos e o cromo que faltava. Nós sabemos exatamente o que fazias primeiro.','CRONOLOGIA · 1998',
+  'a glowing vintage time portal opening inside a 1990s portuguese kiosk full of sticker packets, warm amber light pouring through, kid silhouette stepping in, magical realism, 35mm film grain, nostalgic cinematic grade',4],
+ ['Cromos Derretidos','O verão derretia cromos. E corações.','Deixaste a carteira no banco traseiro do carro. Em agosto. O foil virou uma obra de arte abstrata.','VERÃO · DANOS',
+  'warped melted holographic football sticker stuck to a hot car dashboard in extreme summer heat, surreal glossy drips, brutal sun through windshield, cinematic macro 35mm film photography, warm nostalgic grade',2],
+ ['O Mapa do Tesouro','O sótão era uma caverna de tesouros','X marks the spot: uma caderneta de 1989 debaixo do presépio, com três cromos por colar e um bilhete de cinema lá dentro.','SÓTÃO · EXPEDIÇÃO',
+  'a child with a flashlight exploring a dusty attic like an adventurer holding a treasure map, old sticker albums glowing in a beam of light, spielbergian mood, floating dust, cinematic 35mm film grain, warm tones',5],
+ ['Areia no Cromo','Férias: areia na toalha, areia no cromo','A cola agarrava a areia, a areia agarrava a memória. Ninguém nunca conseguiu separar as duas.','PRAIA · AGOSTO',
+  'close-up of a sandy sticky football sticker being placed into an album at a beach house, sea breeze through the window, golden hour, 1990s summer holiday 35mm film photography, warm faded nostalgic grade, salt texture',2],
+ ['O Cromo que Voltou','30 anos depois, ele chegou pelo correio','Enviaste uma carta em 1996 a pedir o cromo. A resposta chegou em 2026. O carteiro nem perguntou nada.','CORREIO · 30 ANOS',
+  'a weathered hand holding an old yellowed envelope containing a football sticker, modern postmark over a vintage stamp, soft morning light through a door mail slot, cinematic 35mm film photography, emotional mood',5],
+ ['Tudo Menos o 247','Tenho 4000 cromos. Falta-me um.','O multimilionário da caderneta continua pobre no número 247. A fortuna compra quase tudo — menos aquele.','FORTUNA: 4000+',
+  'a comically vast treasure room piled with mountains of duplicate stickers, one empty golden slot glowing in a single open album on a pedestal, dramatic museum spotlight, funny cinematic 35mm film grain, dark moody background',1],
+ ['A Mãe Guardou Tudo','"Deitei fora o brinquedo. A caderneta, não."','Há mães que deitam tudo fora. E há a tua, que guardou a caderneta numa caixa de sapatos com o teu nome.','ARQUIVO MATERNO',
+  'a mother in a 1990s kitchen carefully placing her childs sticker album into a labeled shoe box on a high shelf, warm tender tungsten light, cinematic documentary 35mm film photography, nostalgic warm grade, intimate',4],
+ ['Saqueta de Aniversário','O melhor presente custava 50 escudos','Não havia bolo que competisse. Uma mão cheia de saquetas era o único pedido possível dos 8 aos 12 anos.','ANIVERSÁRIO',
+  'a birthday table with a small cake and a huge pile of sticker packets as the real gift, child hands trembling with excitement, warm party light, 1990s home, 35mm film grain, nostalgic cinematic grade, streamers',2]
+],
+humor:[
+ ['O Cromo Assombrado','O cromo que muda de sítio à noite','De manhã estava na página 12. Juramos. Agora está na 34. A gaveta range. Ninguém fala sobre isto.','FENÓMENO PARANORMAL',
+  'a spooky glowing football sticker floating above a dark bedroom drawer at night, haunted green mist, a terrified cat watching, funny horror movie cinematography, moonlit blues and eerie green, 35mm film grain',4],
+ ['O 247 Não Existe','TEORIA: o 247 nunca foi impresso','Pensem bem: ninguém nunca conheceu ninguém que o tivesse. O 247 é uma lenda inventada para vender saquetas.','CONSPIRAÇÃO NÍVEL 9',
+  'a dramatic red-string conspiracy board covered with stickers and photos all pointing to one empty slot numbered 247, dark room, single swinging lamp, funny detective documentary, cinematic shadows, 35mm film grain',3],
+ ['O Cromo do Árbitro','O cromo que saía sempre. Ninguém o queria.','Apita, decide e enche a gaveta dos repetidos de toda a gente. O mais impresso e o menos trocado da história.','FICHA: ÁRBITRO',
+  'a mundane referee trading card presented like a legendary ultra-rare card on a velvet museum pedestal with ironic dramatic spotlight, funny glorification, dark cinematic product shot, 35mm film grain, museum mood',1],
+ ['Autografado pelo Cão','O autógrafo mais raro era uma pata','O cão da equipa assinou com a pata molhada de tinta. Vale três brilhantes no mercado regulado do recreio.','AUTÓGRAFO AUTÊNTICO',
+  'a fluffy football team dog with ink on its paw leaving a paw print signature on a sticker card, laughing kids around, funny sunny park scene, documentary 35mm film photography, warm nostalgic grade, shallow depth',2],
+ ['O Cromo Gigante','Colaste um cromo tamanho A0 no teto','Não coube na caderneta. Coube no quarto. Agora dormes debaixo do teu avançado favorito. Literalmente.','FORMATO: GIGANTE',
+  'a kid lying in bed staring up at a giant wall-sized football sticker poster on the bedroom ceiling, funny forced perspective, warm night lamp light, nostalgic bedroom, 35mm film grain, cinematic cozy mood',4],
+ ['O Sindicato dos Repetidos','Os repetidos organizaram-se','Exigem colagem digna, trocas justas e uma página só para eles. A gaveta está em greve. Negociações suspensas.','MOVIMENTO SINDICAL',
+  'a comical union protest rally of duplicate sticker characters picketing with tiny placards inside a drawer, funny miniature diorama world, dramatic flashlight beams, humorous cinematic 35mm film grain, deep shadows',3],
+ ['O Treinador que te Observa','O cromo do treinador segue-te com os olhos','Viras-te à esquerda, ele vê. Viras-te à direita, ele vê. Dormes com a gaveta fechada desde 1999.','EFEITO: HIPNÓTICO',
+  'a vintage manager football sticker in a frame whose painted eyes seem to follow the viewer, dark hallway, single spooky light, funny horror poster aesthetic, deep shadows, 35mm film grain, eerie green undertone',5],
+ ['Autodestruição','O cromo autodestrói-se se colares torto','Missão Impossível, versão caderneta. Cinco segundos de cola. Sem direito a segunda tentância.','PROTOCOLO SE7E',
+  'dramatic action-movie close-up of sweaty hands placing a sticker with extreme tension, red countdown glow, cinematic suspense lighting, funny mission impossible parody, high contrast, 35mm film grain',['ALINHAR','SUSPENDER','COLAR']],
+ ['A Gaveta Quântica','O repetido existe e não existe ao mesmo tempo','Tens a certeza que o tens. Abres a gaveta: desapareceu. Fechas: reaparece. Schrödinger foi colecionador.','FÍSICA TEÓRICA',
+  'a surreal half-open drawer where duplicate stickers appear solid on one side and ghostly transparent on the other, quantum physics chalkboard in the background, funny conceptual art, dark cinematic studio, 35mm grain',4],
+ ['Os Marcianos Trocam','Os marcianos também colecionam cromos','Sinais captados pelo observatório, traduzidos: "queremos o vosso 247. Pagamos com tecnologia de dobra espacial."','SINAL EXTRATERRESTRE',
+  'retro 1950s sci-fi B-movie scene of little green aliens in a flying saucer trading football stickers with a portuguese kid in a playground at night, funny flying saucer, dramatic moonlight, 35mm film grain, retro grade',['CONTACTO','TROCA','DESCOLAGEM']]
+],
+comunidade:[
+ ['Bolsa no Quadro Negro','O quadro negro era a bolsa de valores','Cotações a giz: o 247 subia, o árbitro afundava. Tudo atualizado em tempo real, durante o recreio.','MERCADO REGULADO',
+  'a school blackboard covered in chalk stock-market tickers of sticker numbers with up and down arrows, kids trading below, funny documentary 35mm film, warm classroom light, nostalgic grade, chalk dust',3],
+ ['Bairro vs. Craques','Lendas da terra contra craques a sério','No nosso campeonato, o Zé do talho dribla o melhor do mundo. E ganha. Sempre.','CONFRONTO LENDÁRIO',
+  'two dramatic facing holographic football cards dueling in mid-air, a local village amateur in worn boots versus a world star, rainbow foil sparks, dark epic background, cinematic product macro, 35mm grain, funny epic mood',1],
+ ['A Escola Parou','O dia em que a escola inteira trocou cromos','Tocou para o recreio. Ninguém voltou à sala. Os professores também não.','RECREIO HISTÓRICO',
+  'an entire schoolyard in a massive sticker trading session, hundreds of kids in circles, even teachers leaning in, aerial documentary shot, golden afternoon light, warm nostalgic epic wide shot, 35mm film grain',['TOCOU','TROCA GERAL','NINGUÉM VOLTA']],
+ ['Mundial de Apalpar','Campeonato mundial de apalpar saquetas','Dedos de 40 países. Um só envelope. O vencedor detecta o brilhante sem rasgar.','JOGOS OLÍMPICOS',
+  'a dramatic arena spotlight on two intense competitors feeling a sealed sticker packet with eyes closed like a chess world championship, funny olympic ceremony aesthetic, crowd silhouettes, cinematic 35mm film, deep shadows',4],
+ ['Leilão do Recreio','Pastilha elástica como moeda oficial','"Dou uma pastilha e dois cromos!" "Vai uma vez, vai duas…" O mercado paralelo mais sério da escola.','CASA DE LEILÕES',
+  'a funny auction in a school playground with a kid on a bench acting as auctioneer holding a shiny sticker, other kids bidding with gum and coins, dramatic gavel spotlight, documentary 35mm film, warm nostalgic grade',3],
+ ['A Troca Mais Longa','Seis meses de negociação','Começou em setembro com um "talvez". Fechou em março, com aperto de mão e duas testemunhas.','NEGOCIAÇÃO: 6 MESES',
+  'two grown men in suits seriously signing a contract over a sticker trade on a school wall, funny contrast, lawyer folders, dramatic handshake, cinematic parody photography, warm light, 35mm film grain',5],
+ ['Trocas à Janela','Vizinhos que trocavam sem se ver','Saquinho na corda da roupa, janela com janela. O 247 andou três andares abaixo sozinho.','REDE DE VIZINHOS',
+  'a clothesline between two apartment windows with a small bag of stickers sliding across, two kids reaching from windows at sunset, warm city neighborhood light, 1990s 35mm film photography, nostalgic cinematic, golden hour',2],
+ ['Caçadores do 247','O grupo de WhatsApp dos caçadores','137 membros, zero vencedores. Todas as pistas analisadas. A esperança é a última a morrer — e o grupo também.','GRUPO: 137 MEMBROS',
+  'a dark room lit by phones showing a group chat named CACADORES DO 247 with hundreds of messages, teenagers and adults gathered like a detective squad, funny cinematic 35mm film, moody blue screen glow, shadows',3]
+],
+ritual:[
+ ['Completa à Meia-Noite','A caderneta completa-se sozinha à meia-noite','Diz a lenda que, se deixares a caderneta aberta em cima da mesa, um cromo aparece. Ninguém nunca ficou acordado a confirmar.','FENÓMENO: 00:00',
+  'an open sticker album on a midnight kitchen table with one empty slot softly glowing under moonlight, floating dust, magical realism, deep blue night tones with warm moonbeam, cinematic 35mm film grain, mysterious',4],
+ ['O Holograma Solar','O foil só aparece à luz do sol','Dentro de casa é cromo vulgar. Na rua, ao sol, explode em arco-íris. Os caçadores esperavam o intervalo das dez.','PROVA: LUZ DIRETA',
+  'a child holding a holographic sticker up to direct sunlight causing an explosion of rainbow reflections across a dark wall, dramatic sunbeam through window, prismatic light, cinematic macro 35mm film, dark room',1],
+ ['Lua Cheia','O ritual do 247 exige lua cheia','Três velas, uma saqueta fechada e o recreio vazio. Funciona? Não. Mas ninguém prescinde do ritual.','RITUAL LUNAR',
+  'a kid performing a funny mystical ritual around a sealed sticker packet under a full moon in an empty playground, candles in a circle, dramatic moonlight, humorous occult parody, deep blues, cinematic 35mm film grain',['VELAS','SAQUETA','LUA CHEIA']],
+ ['O Cromo Comestível','O foil dourado que parecia chocolate','Ninguém nunca provou. Ok, toda a gente provou. Sabia a papel. E a vitória.','EDIÇÃO: COMESTÍVEL',
+  'a golden foil sticker that looks exactly like a wrapped chocolate bar on a candy store counter, funny temptation scene, child eyes wide, warm sweet-shop light, delicious amber tones, cinematic 35mm film grain, macro',1],
+ ['Caça Noturna','Os cromos que brilham no escuro','Luz apagada, porta fechada: a gaveta transforma-se numa constelação. A caça era debaixo dos lençóis.','MODO: NOTURNO',
+  'a dark bedroom where dozens of glow-in-the-dark stickers on the walls form a glowing constellation map, wonderstruck child inside a blanket fort with flashlight, magical cinematic 35mm film, deep blues and green glow',['APAGAR','CAÇAR','ENCONTRAR']],
+ ['O Cromo-Espelho','O metalizado que servia de espelho','Antes das selfies, havia o cromo prateado. Penteavas-te nele no recreio. Styling gratuito antes do jogo.','ACABAMENTO: ESPELHO',
+  'a silver mirror-finish football sticker reflecting a kid fixing their hair in a school playground, macro product shot with soft reflection, funny vanity, warm afternoon light, metallic highlights, 35mm film grain, cinematic',2]
+],
+cultura:[
+ ['O Museu dos Cromos Malditos','Há um museu para cromos que deram azar','Colou torto, saiu dobrado, veio com gafe. Todos repousam ali, sob luz de velas. Entrada proibida a menores.','ENTRADA PROIBIDA',
+  'a tiny eerie museum room with cursed stickers displayed under glass domes on black velvet, candlelight, funny haunted house curator silhouette, sepia mood, dust in light beams, cinematic 35mm film grain, atmospheric',5],
+ ['O Craque que Era o Padeiro','O melhor 10 da vila fazia pão de manhã','Jogava de tarde, cozia de madrugada. O estádio tinha o cheiro do seu pão. Ninguém pedia autógrafo — pedia pão.','LENDA LOCAL',
+  'a charismatic village football player number 10 covered in flour from the bakery, holding a football in one hand and bread in the other, warm golden bakery light, gritty documentary 35mm film, portugal countryside, cinematic',1],
+ ['O Estádio de Cromos','Construíram um estádio inteiro de cromos','40 mil cromos, uma bancada, um relvado. Tudo colado à mão. A obra-prima definitiva do colecionador.','MAQUETE MONUMENTAL',
+  'a massive detailed stadium model built entirely from thousands of football stickers covering every seat, miniature floodlights, one proud collector standing beside it, epic scale, warm studio light, cinematic 35mm film grain',5],
+ ['O Adepto do Bombo','Há um bombo que nunca falhou um jogo','Não marcava golos. Marcava o ritmo. A bancada ainda bate certo por causa dele.','BANCADA: LENDA',
+  'a legendary portuguese football fan with a huge bass drum in the stands mid-beat, scarves and smoke around him, dramatic stadium light, gritty documentary 35mm film photography, cinematic portrait, deep shadows and gold',4]
+],
+produto:[
+ ['O Cromo NFC','O cromo que toca o hino ao toque','Aproximas o telemóvel: hino, golo e ficha completa do jogador. O papel ganhou voz.','TECNOLOGIA: NFC',
+  'a hand holding a smartphone near a glowing modern sticker card emitting sound waves and a tiny stadium anthem visualization, dark moody desk, neon green and gold accents, premium product commercial photography, 35mm grain',1],
+ ['A Saqueta Empática','A saqueta abre-se quando estás triste','Deteta o teu dia mau e rasga-se sozinha, devagar, como quem oferece um abraço. Consolação em folha.','MODO: CONSOLAR',
+  'a glowing sticker packet gently tearing itself open on a rainy windowsill next to a cup of tea, warm cozy empathy mood, soft amber and teal light, gentle magical realism, cinematic product 35mm film grain, raindrops on glass',['DIA MAU','SAQUETA','ABRAÇO']],
+ ['Duelo Holográfico','Dois cromos. Um holograma. Vence o melhor','Colocas os dois na mesa, apontas o telemóvel, e os jogadores duelam em 3D no ar. O recreio virou arena.','MODO: DUELO',
+  'two trading cards on a dark table projecting glowing holographic football players dueling above them in mid-air, kids watching in awe, neon green and gold light beams, premium sci-fi product shot, epic 35mm film grain',['COLOCAR','PROJETAR','DUELAR']],
+ ['A Caderneta Infinita','A caderneta que nunca acaba','Quando completas, abre nova época. A nostalgia não tem última página — e a ExMe também não.','EDIÇÃO: ETERNA',
+  'an infinite magical sticker album whose pages endlessly extend into a glowing horizon, a hand turning pages that become a football field at sunset, surreal premium commercial, warm golden light, cinematic 35mm film grain',5]
+]};
+
 /* pontes narrativas e CTAs por pilar */
 const NARR = {
   nostalgia:['Há quem colecione cromos. Nós colecionamos memória.','A caderneta fechou. O sentimento, nunca.','Não era só papel. Era a infância inteira, colada sem vincos.'],
@@ -480,21 +575,24 @@ const POSTS=[];
 (function build(){
   let n=0;
   const order=['nostalgia','humor','comunidade','ritual','cultura','produto'];
+  const series=[['A',SEEDS,false],['B',SEEDS_EXTRA,true]];
+  series.forEach(([serieName,seedSet,isB])=>{
   order.forEach(pk=>{
-    SEEDS[pk].forEach((s,i)=>{
+    seedSet[pk].forEach((s,i)=>{
       n++;
       const id=String(n).padStart(2,'0');
       const [t,h,b,note,prompt,arch,steps]=s;
       const imgKey=POOL_IMG[pk][i%POOL_IMG[pk].length];
-      const hh=hash(t);
+      const hh=hash(t+serieName);
       const rar=RARIDADE[hh%RARIDADE.length];
       const post={
         id, pillar:pk, arch: (typeof arch==='number'?arch:(arch?6:2)),
-        t,h,b,note,steps:Array.isArray(arch)?arch:steps,
+        serie:serieName, serieB:isB,
+        t,h,b,note:isB?note+' · SÉRIE B':note,steps:Array.isArray(arch)?arch:steps,
         serial:'EXM·26·'+String(100+n), date:eraDate(pk,i,n),
         pos:POSICOES[hh%POSICOES.length], raridade:rar[0], rarN:rar[1],
         imgURL:unsplashURL(imgKey),
-        imgFallback:picsumURL(FALLBACK_SEED[pk]+'-'+id,'feed'),
+        imgFallback:picsumURL(FALLBACK_SEED[pk]+'-'+id+(isB?'-b':''),'feed'),
         _img:null, imgData:null
       };
       post.slug=slug(t);
@@ -502,6 +600,7 @@ const POSTS=[];
       const pNar=NARR[pk][i%NARR[pk].length]||NARR[pk][0], cta=CTAS[pk][i%CTAS[pk].length];
       const tags=[...TAGS_BASE,...TAGS_PILAR[pk]];
       if(pk==='ritual'&&/spinner/i.test(t)) tags.push('#ExMeSpinners');
+      if(isB) tags.push('#ideiasmirabolantes','#ArquivoSecreto');
       post.caption=h.toUpperCase()+'\n\n'+b+'\n\n'+pNar+'\n\n'+cta+'\n\n'+tags.join(' ');
       const pStyle=', moody cinematic lighting, deep slate and electric green palette with amber accents, 35mm film grain, nostalgic editorial color grade, high detail';
       post.promptTxt=
@@ -511,6 +610,9 @@ const POSTS=[];
       POSTS.push(post);
     });
   });
+  });
+  /* contagens reais após Série A + B */
+  Object.keys(PILLARS).forEach(pk=>{PILLARS[pk].count=POSTS.filter(p=>p.pillar===pk).length;});
 })();
 
 /* ----------------------------- 3. MOTOR SVG ----------------------------- */
@@ -615,7 +717,7 @@ function chrome(p,H,fmt,uid,light=false){
   const pc=PILLARS[p.pillar].cor;
   return `
   <g font-family="${F_MONO}">
-   <text x="64" y="66" font-size="20" font-weight="700" letter-spacing="4" fill="${tc}">EXME // ARQUIVO DO COLECIONADOR</text>
+   <text x="64" y="66" font-size="20" font-weight="700" letter-spacing="4" fill="${p.serieB?'#F59E0B':tc}">${p.serieB?'EXME // SÉRIE B — IDEIAS MIRABOLANTES':'EXME // ARQUIVO DO COLECIONADOR'}</text>
    <line x1="64" y1="88" x2="1016" y2="88" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
    <line x1="64" y1="${H-92}" x2="1016" y2="${H-92}" stroke="${tc}" opacity=".25" stroke-width="1.5"/>
    <text x="64" y="${H-52}" font-size="19" font-weight="700" letter-spacing="3" fill="${pc}">${esc(PILLARS[p.pillar].nome.toUpperCase())}</text>
@@ -841,7 +943,7 @@ function archReliquia(p,d,uid){
     const ty=ph+80;
     s+=txt(72,ty,p.note,{mono:true,fs:22,fill:'#10E868',ls:4});
     s+=txt(72,ty+86,p.h,{fs:64,maxW:w-144,fill:'#F8FAFC',wt:800,lh:1.02});
-    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','CAMPO DA FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO PELO TEMPO'],['Nº SÉRIE',p.serial],['CATÁLOGO','PÁG. '+p.id+' / 060']];
+    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','CAMPO DA FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO PELO TEMPO'],['Nº SÉRIE',p.serial],['CATÁLOGO','PÁG. '+p.id+' / '+POSTS.length]];
     rows.forEach((r,i)=>{const y=ty+250+i*72;
       s+=txt(72,y,r[0],{mono:true,fs:19,fill:'rgba(248,250,252,.45)',ls:3});
       s+=txt(w-72,y,r[1],{mono:true,fs:21,fill:'#E2E8F0',anchor:'end'});
@@ -859,7 +961,7 @@ function archReliquia(p,d,uid){
     s+=stamp(mirror?px+150:px+pw-150,H-260,stampTxt+' '+p.date.substring(p.date.length-4),'#F8FAFC',mirror?-stampRot:stampRot,1);
     s+=txt(x,250,p.note,{mono:true,fs:21,fill:v%2?'#F59E0B':'#10E868',ls:4,maxW:pw-128});
     s+=txt(x,340,p.h,{fs:52,maxW:pw-128,fill:'#F8FAFC',wt:800});
-    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO'],['SÉRIE',p.serial],['CATÁLOGO',p.id+'/060']];
+    const rows=[['ESPÉCIME',p.t.toUpperCase()],['ORIGEM','FREGUESIA · PT'],['DATA',p.date],['ESTADO','GASTO'],['SÉRIE',p.serial],['CATÁLOGO',p.id+'/'+POSTS.length]];
     rows.forEach((r,i)=>{const y=620+i*88;
       s+=txt(x,y,r[0],{mono:true,fs:18,fill:'rgba(248,250,252,.45)',ls:3});
       s+=txt(ax,y,r[1],{mono:true,fs:20,fill:'#E2E8F0',anchor:'end',maxW:pw-140});
@@ -1057,7 +1159,7 @@ function hideProg(){document.getElementById('progress').classList.remove('open')
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 async function addPostToZip(zip,p,idx,total,labelPrefix){
-  setProg(Math.round(idx/total*100),(labelPrefix||'A empacotar')+' · cromo '+p.id+'/060 — '+p.t);
+  setProg(Math.round(idx/total*100),(labelPrefix||'A empacotar')+' · cromo '+p.id+'/'+POSTS.length+' — '+p.t);
   const f=zip.folder('EXME-'+p.id+'-'+p.slug);
   const [svgFeed,svgStory]=await Promise.all([buildSVGAsync(p,'feed'),buildSVGAsync(p,'story')]);
   const [pngFeed,pngStory]=await Promise.all([pngBlob(svgFeed,2),pngBlob(svgStory,2)]);
@@ -1088,8 +1190,8 @@ async function zipMaster(){
   const zip=newZip();
   for(let i=0;i<POSTS.length;i++){await addPostToZip(zip,POSTS[i],i,POSTS.length,'Master ZIP');}
   const blob=await zip.generateAsync({type:'blob'});
-  saveBlob(blob,'EXME_Arquivo_60_Posts.zip');
-  hideProg();toast('Arquivo completo descarregado — 60 pastas');
+  saveBlob(blob,'EXME_Arquivo_'+POSTS.length+'_Posts.zip');
+  hideProg();toast('Arquivo completo descarregado — '+POSTS.length+' pastas');
 }
 async function quickPNG(p,fmt){
   setProg(0,'A renderizar '+fmt+' 2×…','PNG HD');
